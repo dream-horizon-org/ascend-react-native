@@ -1,0 +1,61 @@
+buildscript {
+    ext {
+        buildToolsVersion = "36.0.0"
+        minSdkVersion = 24
+        compileSdkVersion = 36
+        targetSdkVersion = 36
+        ndkVersion = "27.1.12297006"
+        kotlinVersion = "2.1.20"
+    }
+    repositories {
+        google()
+        mavenCentral()
+        
+        // Load GitHub credentials from github.properties
+        def githubProperties = new Properties()
+        def githubPropertiesFile = rootProject.file('../../github.properties')
+        if (githubPropertiesFile.exists()) {
+            githubPropertiesFile.withInputStream { githubProperties.load(it) }
+        }
+        
+        // Private Maven repo for ascend-android
+        maven {
+            url = uri("https://maven.pkg.github.com/dream11/ascend-android")
+            credentials {
+                username = githubProperties['github.username'] ?: System.getenv("GITHUB_USERNAME") ?: ""
+                password = githubProperties['github.token'] ?: System.getenv("GITHUB_TOKEN") ?: ""
+            }
+        }
+    }
+    dependencies {
+        classpath("com.android.tools.build:gradle")
+        classpath("com.facebook.react:react-native-gradle-plugin")
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin")
+    }
+}
+
+apply plugin: "com.facebook.react.rootproject"
+
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+        
+        // Load GitHub credentials from github.properties
+        def githubProperties = new Properties()
+        def githubPropertiesFile = rootProject.file('../../github.properties')
+        if (githubPropertiesFile.exists()) {
+            githubPropertiesFile.withInputStream { githubProperties.load(it) }
+        }
+        
+        // Add the private Maven repo here too
+        maven {
+            url = uri("https://maven.pkg.github.com/dream11/ascend-android")
+            credentials {
+                username = githubProperties['github.username'] ?: System.getenv("GITHUB_USERNAME") ?: ""
+                password = githubProperties['github.token'] ?: System.getenv("GITHUB_TOKEN") ?: ""
+            }
+        }
+    }
+}   //Changes for private maven package
+

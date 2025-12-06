@@ -1,0 +1,101 @@
+buildscript {
+  ext.getExtOrDefault = {name ->
+    return rootProject.ext.has(name) ? rootProject.ext.get(name) : project.properties['AscendReactNativeSdk_' + name]
+  }
+
+  repositories {
+    google()
+    mavenCentral()
+  }
+
+  dependencies {
+    classpath "com.android.tools.build:gradle:8.7.2"
+    // noinspection DifferentKotlinGradleVersion
+    classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${getExtOrDefault('kotlinVersion')}"
+  }
+}
+
+
+apply plugin: "com.android.library"
+apply plugin: "kotlin-android"
+
+apply plugin: "com.facebook.react"
+
+def getExtOrIntegerDefault(name) {
+  return rootProject.ext.has(name) ? rootProject.ext.get(name) : (project.properties["AscendReactNativeSdk_" + name]).toInteger()
+}
+
+android {
+  namespace "com.ascendreactnativesdk"
+
+  compileSdkVersion getExtOrIntegerDefault("compileSdkVersion")
+
+  defaultConfig {
+    minSdkVersion getExtOrIntegerDefault("minSdkVersion")
+    targetSdkVersion getExtOrIntegerDefault("targetSdkVersion")
+  }
+
+  buildFeatures {
+    buildConfig true
+  }
+
+  buildTypes {
+    release {
+      minifyEnabled false
+    }
+  }
+
+  lintOptions {
+    disable "GradleCompatible"
+  }
+
+  compileOptions {
+    sourceCompatibility JavaVersion.VERSION_1_8
+    targetCompatibility JavaVersion.VERSION_1_8
+  }
+
+  sourceSets {
+    main {
+      java.srcDirs += [
+        "generated/java",
+        "generated/jni"
+      ]
+    }
+  }
+}
+
+repositories {
+  mavenCentral()
+  google()
+  
+  // Load GitHub credentials from github.properties
+  def githubProperties = new Properties()
+  def githubPropertiesFile = rootProject.file('../github.properties')
+  if (githubPropertiesFile.exists()) {
+    githubPropertiesFile.withInputStream { githubProperties.load(it) }
+  }
+  
+  def ascendMavenUrl = System.getenv("ASCEND_MAVEN_URL") ?: project.findProperty("ascendMavenUrl")
+  if (ascendMavenUrl) {
+    maven {
+      url ascendMavenUrl
+      def ascendMavenUser = githubProperties['github.username'] ?: System.getenv("GITHUB_USERNAME")
+      def ascendMavenPass = githubProperties['github.token'] ?: System.getenv("GITHUB_TOKEN")
+      if (ascendMavenUser && ascendMavenPass) {
+        credentials {
+          username ascendMavenUser
+          password ascendMavenPass
+        }
+      }
+    }
+  }
+  //Changes for private maven package
+}
+
+def kotlin_version = getExtOrDefault("kotlinVersion")
+
+dependencies {
+  implementation "com.facebook.react:react-android"
+  implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+  implementation 'com.dream.sports:ascend-android:1.0.8-staging'
+}
