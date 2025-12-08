@@ -22,19 +22,13 @@ export default function App() {
   const handleInitialize = async () => {
     const config: AscendConfig = {
       httpConfig: {
-        headers: {
-          'api-key': '0a4bcafc-d0b2-4477-9482-f9ba57cf58f3',
-          'user-id': '148925305',
-          'content-type': 'application/json',
-          'Accept': 'application/json',
-        },
-        shouldRetry: true,
-        apiBaseUrl: 'https://api.dream11.com',
-        retrialConfig: {
-          attempts: 2,
-          delay: { time: 200, policy: 'LINEAR' },
-        },
-        timeoutConfig: { callTimeout: 15000 },
+        //shouldRetry: true,
+        apiBaseUrl: 'http://10.0.2.2:8100',
+        // retrialConfig: {
+        //   attempts: 2,
+        //   delay: { time: 200, policy: 'LINEAR' },
+        // },
+        // timeoutConfig: { callTimeout: 15000 },
       },
       plugins: [
         {
@@ -43,33 +37,22 @@ export default function App() {
             shouldFetchOnInit: true,
             shouldRefreshDRSOnForeground: false,
             defaultValues: {
-              test_variants_31: {
+              rn_sdk_test2: {
                 color: 'blue',
                 prime: true,
                 boolean: false,
                 number: 0,
               },
             },
-            apiBaseUrl: 'https://api.dream11.com',
-            apiEndpoint: '/v1/users/experiments',
-            headers: {
-              'api-key': '0a4bcafc-d0b2-4477-9482-f9ba57cf58f3',
-              'content-type': 'application/json',
-              'user-id': '148925305',
-              'Accept': 'application/json',
-            },
+            //apiBaseUrl: 'http://10.0.2.2:8100',
+            //apiEndpoint: '/v1/allocations',
             enableCaching: true,
             enableDebugLogging: true,
           },
         },
       ],
       clientConfig: {
-        apiKey: '0a4bcafc-d0b2-4477-9482-f9ba57cf58f3',
-        userId: '148925305',
-        environment: 'development',
-        enableDebugLogging: true,
-        enablePerformanceMonitoring: true,
-        enableCrashReporting: true,
+        apiKey: 'my-project',
       },
     };
 
@@ -92,7 +75,7 @@ export default function App() {
     }
     try {
       const defaultValues = {
-        test_variants_31: {
+        rn_sdk_test2: {
           color: 'blue',
           boolean: false,
           prime: true,
@@ -140,7 +123,7 @@ export default function App() {
       switch (type) {
         case 'boolean':
           value = await Experiments.getBooleanFlag(
-            'test_variants_31',
+            'rn_sdk_test2',
             variable,
             false,
             false
@@ -148,7 +131,7 @@ export default function App() {
           break;
         case 'number':
           value = await Experiments.getNumberFlag(
-            'test_variants_31',
+            'rn_sdk_test2',
             variable,
             false,
             false
@@ -156,7 +139,7 @@ export default function App() {
           break;
         case 'string':
           value = await Experiments.getStringFlag(
-            'test_variants_31',
+            'rn_sdk_test2',
             variable,
             false,
             false
@@ -175,7 +158,7 @@ export default function App() {
       return;
     }
     try {
-      const variables = await Experiments.getAllVariables('test_variants_31');
+      const variables = await Experiments.getAllVariables('rn_sdk_test2');
       setResult(JSON.stringify(variables) || 'No variables found');
     } catch (error) {
       setResult(`Error: ${error}`);
@@ -261,7 +244,7 @@ export default function App() {
       return;
     }
     try {
-      const success = await Ascend.setGuest(guestIdInput.trim());
+      const success = await Ascend.setStableId(guestIdInput.trim());
       setResult(
         success
           ? `Guest set successfully: ${guestIdInput.trim()} ✅`
@@ -278,7 +261,7 @@ export default function App() {
       return;
     }
     try {
-      const guestId = await Ascend.getGuestId();
+      const guestId = await Ascend.getStableId();
       setResult(`Guest ID: ${guestId || '(empty)'}`);
     } catch (error) {
       setResult(`Error: ${error}`);

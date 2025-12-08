@@ -10,22 +10,6 @@ buildscript {
     repositories {
         google()
         mavenCentral()
-        
-        // Load GitHub credentials from github.properties
-        def githubProperties = new Properties()
-        def githubPropertiesFile = rootProject.file('../../github.properties')
-        if (githubPropertiesFile.exists()) {
-            githubPropertiesFile.withInputStream { githubProperties.load(it) }
-        }
-        
-        // Private Maven repo for ascend-android
-        maven {
-            url = uri("https://maven.pkg.github.com/dream11/ascend-android")
-            credentials {
-                username = githubProperties['github.username'] ?: System.getenv("GITHUB_USERNAME") ?: ""
-                password = githubProperties['github.token'] ?: System.getenv("GITHUB_TOKEN") ?: ""
-            }
-        }
     }
     dependencies {
         classpath("com.android.tools.build:gradle")
@@ -40,22 +24,6 @@ allprojects {
     repositories {
         google()
         mavenCentral()
-        
-        // Load GitHub credentials from github.properties
-        def githubProperties = new Properties()
-        def githubPropertiesFile = rootProject.file('../../github.properties')
-        if (githubPropertiesFile.exists()) {
-            githubPropertiesFile.withInputStream { githubProperties.load(it) }
-        }
-        
-        // Add the private Maven repo here too
-        maven {
-            url = uri("https://maven.pkg.github.com/dream11/ascend-android")
-            credentials {
-                username = githubProperties['github.username'] ?: System.getenv("GITHUB_USERNAME") ?: ""
-                password = githubProperties['github.token'] ?: System.getenv("GITHUB_TOKEN") ?: ""
-            }
-        }
     }
-}   //Changes for private maven package
+}
 

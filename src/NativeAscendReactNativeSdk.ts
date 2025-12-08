@@ -4,8 +4,8 @@ export interface Spec extends TurboModule {
   init(config: Object): Promise<import('./core/Ascend').InitResult>;
   setUser(userId: string): Promise<boolean>;
   getUserId(): Promise<string>;
-  setGuest(guestId: string): Promise<boolean>;
-  getGuestId(): Promise<string>;
+  setStableId(stableId: string): Promise<boolean>;
+  getStableId(): Promise<string>;
   getStringFlag(
     apiPath: string,
     variable: string,
