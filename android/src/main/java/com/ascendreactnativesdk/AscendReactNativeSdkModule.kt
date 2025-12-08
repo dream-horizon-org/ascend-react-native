@@ -7,8 +7,8 @@ import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.module.annotations.ReactModule
-import com.application.ascend_android.Plugger
-import com.application.ascend_android.PluggerConfig
+import com.application.ascend_android.Ascend
+import com.application.ascend_android.AscendConfig
 import com.application.ascend_android.PluginConfig
 import com.application.ascend_android.HttpConfig
 import com.application.ascend_android.ClientConfig
@@ -20,7 +20,7 @@ import com.application.ascend_android.TimeoutConfig
 import com.application.ascend_android.DRSPlugin
 import com.application.ascend_android.ExperimentConfig
 import com.application.ascend_android.IExperimentCallback
-import com.application.ascend_android.PluggerUser
+import com.application.ascend_android.AscendUser
 import com.google.gson.JsonObject
 import kotlin.collections.arrayListOf
 import java.util.HashMap
@@ -177,14 +177,14 @@ class AscendReactNativeSdkModule(reactContext: ReactApplicationContext) :
       }
 
 
-      val pluggerConfig = PluggerConfig(
+      val ascendConfig = AscendConfig(
         httpConfig,
         plugins = pluginConfigs,
         clientConfig = ClientConfig(apiKey = apiKey)
       )
 
-      Plugger.init(pluggerConfig, reactApplicationContext)
-      PluggerUser.setUser(userId)
+      Ascend.init(ascendConfig, reactApplicationContext)
+      AscendUser.setUser(userId)
       
       val result = Arguments.createMap()
       result.putBoolean("success", true)
@@ -203,9 +203,9 @@ class AscendReactNativeSdkModule(reactContext: ReactApplicationContext) :
 
   override fun isInitialized(promise: Promise) {
     try {
-      val isInitialized = Plugger.isPluggerInitialised();
+      val isInitialized = Ascend.isAscendInitialised();
       
-      Log.d(NAME, "Plugger initialized status: $isInitialized")
+      Log.d(NAME, "Ascend initialized status: $isInitialized")
       promise.resolve(isInitialized)
     } catch (e: Exception) {
       Log.e(NAME, "Error in isInitialized: ${e.message}", e)
@@ -215,7 +215,7 @@ class AscendReactNativeSdkModule(reactContext: ReactApplicationContext) :
 
   override fun setUser(userId: String, promise: Promise) {
     try {
-      PluggerUser.setUser(userId)
+      AscendUser.setUser(userId)
       promise.resolve(true)
     } catch (e: Exception) {
       Log.e(NAME, "Error in setUser: ${e.message}", e)
@@ -224,7 +224,7 @@ class AscendReactNativeSdkModule(reactContext: ReactApplicationContext) :
   }
   override fun getUserId(promise: Promise) {
     try {
-      val userId = PluggerUser.userId
+      val userId = AscendUser.userId
       Log.d(NAME, "getUserId result: $userId")
       promise.resolve(userId)
     } catch (e: Exception) {
@@ -233,24 +233,24 @@ class AscendReactNativeSdkModule(reactContext: ReactApplicationContext) :
     }
   }
 
-  override fun setGuest(guestId: String, promise: Promise) {
+  override fun setStableId(stableId: String, promise: Promise) {
     try {
-      PluggerUser.setGuest(guestId)
+      AscendUser.setStable(stableId)
       promise.resolve(true)
     } catch (e: Exception) {
-      Log.e(NAME, "Error in setGuest: ${e.message}", e)
-      promise.reject("ERROR", "Failed to set guest: ${e.message}", e)
+      Log.e(NAME, "Error in setStableId: ${e.message}", e)
+      promise.reject("ERROR", "Failed to set stable id: ${e.message}", e)
     }
   }
 
-  override fun getGuestId(promise: Promise) {
+  override fun getStableId(promise: Promise) {
     try {
-      val guestId = PluggerUser.guestId
-      Log.d(NAME, "getGuestId result: $guestId")
-      promise.resolve(guestId)
+        val stableId = AscendUser.stableId
+      Log.d(NAME, "getStableId result: $stableId")
+      promise.resolve(stableId)
     } catch (e: Exception) {
-      Log.e(NAME, "Error in getGuestId: ${e.message}", e)
-      promise.reject("ERROR", "Failed to get guest id: ${e.message}", e)
+      Log.e(NAME, "Error in getStableId: ${e.message}", e)
+      promise.reject("ERROR", "Failed to get stable id: ${e.message}", e)
     }
   }
 
@@ -258,7 +258,7 @@ class AscendReactNativeSdkModule(reactContext: ReactApplicationContext) :
     try {
       Log.d(NAME, "getStringFlag called - apiPath: $apiPath, variable: $variable, dontCache: $dontCache, ignoreCache: $ignoreCache")
       
-      val experimentPlugin = Plugger.getPlugin<DRSPlugin>(Plugins.EXPERIMENTS)
+      val experimentPlugin = Ascend.getPlugin<DRSPlugin>(Plugins.EXPERIMENTS)
       val result = experimentPlugin.getExperimentService().getStringFlag(apiPath, variable, dontCache, ignoreCache)
       
       Log.d(NAME, "getStringFlag result: $result")
@@ -271,7 +271,7 @@ class AscendReactNativeSdkModule(reactContext: ReactApplicationContext) :
 
   override fun getBooleanFlag(apiPath: String, variable: String, dontCache: Boolean, ignoreCache: Boolean, promise: Promise) {
     try {
-      val experimentPlugin = Plugger.getPlugin<DRSPlugin>(Plugins.EXPERIMENTS)
+      val experimentPlugin = Ascend.getPlugin<DRSPlugin>(Plugins.EXPERIMENTS)
       val result = experimentPlugin.getExperimentService().getBooleanFlag(apiPath, variable, dontCache, ignoreCache)
       
       Log.d(NAME, "getBooleanFlag result: $result")
@@ -284,7 +284,7 @@ class AscendReactNativeSdkModule(reactContext: ReactApplicationContext) :
 
   override fun getNumberFlag(apiPath: String, variable: String, dontCache: Boolean, ignoreCache: Boolean, promise: Promise) {
     try {
-      val experimentPlugin = Plugger.getPlugin<DRSPlugin>(Plugins.EXPERIMENTS)
+      val experimentPlugin = Ascend.getPlugin<DRSPlugin>(Plugins.EXPERIMENTS)
       val result = experimentPlugin.getExperimentService().getDoubleFlag(apiPath, variable, dontCache, ignoreCache)
       
       Log.d(NAME, "getNumberFlag result: $result")
@@ -297,7 +297,7 @@ class AscendReactNativeSdkModule(reactContext: ReactApplicationContext) :
 
   override fun getAllVariables(apiPath: String, promise: Promise) {
     try {
-      val experimentPlugin = Plugger.getPlugin<DRSPlugin>(Plugins.EXPERIMENTS)
+      val experimentPlugin = Ascend.getPlugin<DRSPlugin>(Plugins.EXPERIMENTS)
       val result = experimentPlugin.getExperimentService().getAllVariables(apiPath)
       
       val jsonString = result.toString()
@@ -312,7 +312,7 @@ class AscendReactNativeSdkModule(reactContext: ReactApplicationContext) :
 
   override fun initializeExperiments(promise: Promise) {
     try {
-      val experimentPlugin = Plugger.getPlugin<DRSPlugin>(Plugins.EXPERIMENTS)
+      val experimentPlugin = Ascend.getPlugin<DRSPlugin>(Plugins.EXPERIMENTS)
       Log.d(NAME, "Experiments plugin initialized successfully: $experimentPlugin")
       
       promise.resolve(true)
@@ -324,7 +324,7 @@ class AscendReactNativeSdkModule(reactContext: ReactApplicationContext) :
 
   override fun refreshExperiment(promise: Promise) {
     try {
-      val experimentPlugin = Plugger.getPlugin<DRSPlugin>(Plugins.EXPERIMENTS)
+      val experimentPlugin = Ascend.getPlugin<DRSPlugin>(Plugins.EXPERIMENTS)
       val callback = object : IExperimentCallback {
         override fun onFailure(throwable: Throwable) {
           Log.e(NAME, "refreshExperiment failed: ${throwable.message}", throwable)
@@ -348,7 +348,7 @@ class AscendReactNativeSdkModule(reactContext: ReactApplicationContext) :
     try {
       Log.d(NAME, "fetchExperiments called with defaultValues: $defaultValues")
       
-      val experimentPlugin = Plugger.getPlugin<DRSPlugin>(Plugins.EXPERIMENTS)
+      val experimentPlugin = Ascend.getPlugin<DRSPlugin>(Plugins.EXPERIMENTS)
       
       val defaultMap = HashMap<String, JsonObject?>()
         val iterator = defaultValues.keySetIterator()
@@ -415,7 +415,7 @@ class AscendReactNativeSdkModule(reactContext: ReactApplicationContext) :
 
   override fun getExperimentVariants(promise: Promise) {
     try {
-      val experimentPlugin = Plugger.getPlugin<DRSPlugin>(Plugins.EXPERIMENTS)
+      val experimentPlugin = Ascend.getPlugin<DRSPlugin>(Plugins.EXPERIMENTS)
       val res = experimentPlugin.getExperimentService().getExperimentVariants()
       
       // Convert HashMap to JSON string using Gson

@@ -61,11 +61,11 @@ const Ascend = {
   getUserId: (): Promise<string> => {
     return AscendReactNativeSdk.getUserId();
   },
-  setGuest: (guestId: string): Promise<boolean> => {
-    return AscendReactNativeSdk.setGuest(guestId);
+  setStableId: (stableId: string): Promise<boolean> => {
+    return AscendReactNativeSdk.setStableId(stableId);
   },
-  getGuestId: (): Promise<string> => {
-    return AscendReactNativeSdk.getGuestId();
+  getStableId: (): Promise<string> => {
+    return AscendReactNativeSdk.getStableId();
   },
 };
 
