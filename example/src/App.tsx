@@ -28,6 +28,9 @@ export default function App() {
         {
           name: 'EXPERIMENTS',
           config: {
+            httpConfig: {
+              apiBaseUrl: 'http://10.0.2.2:8100',
+            },
             shouldFetchOnInit: true,
             shouldRefreshDRSOnForeground: false,
             defaultValues: {

@@ -24,7 +24,14 @@ export interface HTTPConfig {
 
 export interface PluginConfig {
   name: string; // Plugin name: 'EXPERIMENTS', etc.
-  config: Object; // Plugin-specific configuration
+  config: {
+    httpConfig: HTTPConfig;
+    shouldFetchOnInit?: boolean;
+    shouldRefreshDRSOnForeground?: boolean;
+    defaultValues: { [key: string]: any };
+    enableCaching?: boolean;
+    enableDebugLogging?: boolean;
+  }; // Plugin-specific configuration
 }
 
 export interface ClientConfig {
