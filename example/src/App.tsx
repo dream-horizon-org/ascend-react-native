@@ -22,13 +22,7 @@ export default function App() {
   const handleInitialize = async () => {
     const config: AscendConfig = {
       httpConfig: {
-        //shouldRetry: true,
         apiBaseUrl: 'http://10.0.2.2:8100',
-        // retrialConfig: {
-        //   attempts: 2,
-        //   delay: { time: 200, policy: 'LINEAR' },
-        // },
-        // timeoutConfig: { callTimeout: 15000 },
       },
       plugins: [
         {
@@ -44,8 +38,6 @@ export default function App() {
                 number: 0,
               },
             },
-            //apiBaseUrl: 'http://10.0.2.2:8100',
-            //apiEndpoint: '/v1/allocations',
             enableCaching: true,
             enableDebugLogging: true,
           },

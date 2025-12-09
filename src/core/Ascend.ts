@@ -6,25 +6,25 @@ export interface RetrialDelayConfig {
 }
 
 export interface RetrialConfig {
-  attempts?: number; // Number of retry attempts
+  attempts: number; // Number of retry attempts
   delay?: RetrialDelayConfig; // Delay configuration
 }
 
 export interface TimeoutConfig {
-  callTimeout?: number; // Request timeout in milliseconds
+  callTimeout: number; // Request timeout in milliseconds
 }
 
 export interface HTTPConfig {
   headers?: { [key: string]: string }; // Default headers for all requests
   shouldRetry?: boolean; // Whether to retry failed requests
-  apiBaseUrl?: string; // Base URL for API requests
+  apiBaseUrl: string; // Base URL for API requests
   retrialConfig?: RetrialConfig; // Retry configuration
   timeoutConfig?: TimeoutConfig; // Timeout configuration
 }
 
 export interface PluginConfig {
   name: string; // Plugin name: 'EXPERIMENTS', etc.
-  config?: Object; // Plugin-specific configuration
+  config: Object; // Plugin-specific configuration
 }
 
 export interface ClientConfig {
@@ -43,8 +43,8 @@ export interface InitResult {
 }
 
 export interface AscendConfig {
-  httpConfig?: HTTPConfig;
-  plugins?: PluginConfig[];
+  httpConfig: HTTPConfig;
+  plugins: PluginConfig[];
   clientConfig: ClientConfig;
 }
 
