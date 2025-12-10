@@ -2,47 +2,47 @@ import AscendReactNativeSdk from '../NativeAscendReactNativeSdk';
 
 const Experiments = {
   getStringFlag: (
-    apiPath: string,
+    experimentKey: string,
     variable: string,
     dontCache: boolean,
     ignoreCache: boolean
   ): Promise<string> => {
     return AscendReactNativeSdk.getStringFlag(
-      apiPath,
+      experimentKey,
       variable,
       dontCache,
       ignoreCache
     );
   },
   getBooleanFlag: (
-    apiPath: string,
+    experimentKey: string,
     variable: string,
     dontCache: boolean,
     ignoreCache: boolean
   ): Promise<boolean> => {
     return AscendReactNativeSdk.getBooleanFlag(
-      apiPath,
+      experimentKey,
       variable,
       dontCache,
       ignoreCache
     );
   },
   getNumberFlag: (
-    apiPath: string,
+    experimentKey: string,
     variable: string,
     dontCache: boolean,
     ignoreCache: boolean
   ): Promise<number> => {
     return AscendReactNativeSdk.getNumberFlag(
-      apiPath,
+      experimentKey,
       variable,
       dontCache,
       ignoreCache
     );
   },
-  getAllVariables: async <T>(apiPath: string): Promise<T> => {
+  getAllVariables: async <T>(experimentKey: string): Promise<T> => {
     try {
-      const val = await AscendReactNativeSdk.getAllVariables(apiPath);
+      const val = await AscendReactNativeSdk.getAllVariables(experimentKey);
       if (!val) {
         return {} as T;
       }

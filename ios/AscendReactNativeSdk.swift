@@ -180,55 +180,55 @@ import Ascend
         completion(Ascend.user.getGuestId())
     }
     
-    @objc public static func getBooleanFlag(_ apiPath: String, variable: String, dontCache: Bool, ignoreCache: Bool, completion: @escaping (Bool) -> Void) {
-        guard isValidInput(apiPath, variable), let experiments = try? getExperimentsPlugin() else {
+    @objc public static func getBooleanFlag(_ experimentKey: String, variable: String, dontCache: Bool, ignoreCache: Bool, completion: @escaping (Bool) -> Void) {
+        guard isValidInput(experimentKey, variable), let experiments = try? getExperimentsPlugin() else {
             completion(false)
             return
         }
-        let result = experiments.getBoolValue(for: apiPath, with: variable, dontCache: dontCache, ignoreCache: ignoreCache)
+        let result = experiments.getBoolValue(for: experimentKey, with: variable, dontCache: dontCache, ignoreCache: ignoreCache)
         completion(result)
     }
     
-    @objc public static func getNumberFlag(_ apiPath: String, variable: String, dontCache: Bool, ignoreCache: Bool, completion: @escaping (Double) -> Void) {
-        guard isValidInput(apiPath, variable), let experiments = try? getExperimentsPlugin() else {
+    @objc public static func getNumberFlag(_ experimentKey: String, variable: String, dontCache: Bool, ignoreCache: Bool, completion: @escaping (Double) -> Void) {
+        guard isValidInput(experimentKey, variable), let experiments = try? getExperimentsPlugin() else {
             completion(0.0)
             return
         }
         
         // Try getDoubleValue first
-        let doubleResult = experiments.getDoubleValue(for: apiPath, with: variable, dontCache: dontCache, ignoreCache: ignoreCache)
+        let doubleResult = experiments.getDoubleValue(for: experimentKey, with: variable, dontCache: dontCache, ignoreCache: ignoreCache)
         if doubleResult != -1.0 {
             completion(doubleResult)
             return
         }
         
         // Try int and convert to double
-        let intResult = experiments.getIntValue(for: apiPath, with: variable, dontCache: dontCache, ignoreCache: ignoreCache)
+        let intResult = experiments.getIntValue(for: experimentKey, with: variable, dontCache: dontCache, ignoreCache: ignoreCache)
         if intResult != -1 {
             completion(Double(intResult))
             return
         }
         
         // Try long and convert to double
-        let longResult = experiments.getLongValue(for: apiPath, with: variable, dontCache: dontCache, ignoreCache: ignoreCache)
+        let longResult = experiments.getLongValue(for: experimentKey, with: variable, dontCache: dontCache, ignoreCache: ignoreCache)
         completion(Double(longResult))
     }
     
-    @objc public static func getStringFlag(_ apiPath: String, variable: String, dontCache: Bool, ignoreCache: Bool, completion: @escaping (String) -> Void) {
-        guard isValidInput(apiPath, variable), let experiments = try? getExperimentsPlugin() else {
+    @objc public static func getStringFlag(_ experimentKey: String, variable: String, dontCache: Bool, ignoreCache: Bool, completion: @escaping (String) -> Void) {
+        guard isValidInput(experimentKey, variable), let experiments = try? getExperimentsPlugin() else {
             completion("")
             return
         }
-        let result = experiments.getStringValue(for: apiPath, with: variable, dontCache: dontCache, ignoreCache: ignoreCache)
+        let result = experiments.getStringValue(for: experimentKey, with: variable, dontCache: dontCache, ignoreCache: ignoreCache)
         completion(result)
     }
     
-    @objc public static func getAllVariables(_ apiPath: String, completion: @escaping (String) -> Void) {
-        guard Ascend.isInitialized(), !apiPath.isEmpty else {
+    @objc public static func getAllVariables(_ experimentKey: String, completion: @escaping (String) -> Void) {
+        guard Ascend.isInitialized(), !experimentKey.isEmpty else {
             completion("")
             return
         }
-        let result = try? getExperimentsPlugin().getAllVariablesJSON(for: apiPath)
+        let result = try? getExperimentsPlugin().getAllVariablesJSON(for: experimentKey)
         completion(result ?? "")
     }
     
@@ -239,8 +239,8 @@ import Ascend
         }
         let variants = experiments.getExperimentVariants()
         var variantsDict: [String: [String: String]] = [:]
-        for (apiPath, variant) in variants {
-            variantsDict[apiPath] = [
+        for (experimentKey, variant) in variants {
+            variantsDict[experimentKey] = [
                 "experimentId": variant.experimentId,
                 "variantName": variant.variantName
             ]
@@ -297,17 +297,17 @@ import Ascend
             return
         }
         
-        let apiPaths = Array(defaultValuesDict.keys)
-        guard !apiPaths.isEmpty else {
+        let experimentKeys = Array(defaultValuesDict.keys)
+        guard !experimentKeys.isEmpty else {
             completion(false)
             return
         }
         
         do {
             let experiments = try getExperimentsPlugin()
-            let apiPathsDict = Dictionary(uniqueKeysWithValues: apiPaths.map { ($0, ExperimentVariable.dictionary([:])) })
+            let experimentKeysDict = Dictionary(uniqueKeysWithValues: experimentKeys.map { ($0, ExperimentVariable.dictionary([:])) })
             
-            experiments.fetchExperiments(for: apiPathsDict) { response, error in
+            experiments.fetchExperiments(for: experimentKeysDict) { response, error in
                 completion(response != nil && error == nil)
             }
         } catch {
@@ -322,8 +322,8 @@ import Ascend
         return try Ascend.getPlugin(AscendExperiments.self)
     }
     
-    private static func isValidInput(_ apiPath: String, _ variable: String) -> Bool {
-        return Ascend.isInitialized() && !apiPath.isEmpty && !variable.isEmpty
+    private static func isValidInput(_ experimentKey: String, _ variable: String) -> Bool {
+        return Ascend.isInitialized() && !experimentKey.isEmpty && !variable.isEmpty
     }
     
     private static func extractHeaders(from value: Any?) -> [String: String] {
