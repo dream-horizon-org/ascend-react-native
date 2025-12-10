@@ -254,12 +254,12 @@ class AscendReactNativeSdkModule(reactContext: ReactApplicationContext) :
     }
   }
 
-  override fun getStringFlag(apiPath: String, variable: String, dontCache: Boolean, ignoreCache: Boolean, promise: Promise) {
+  override fun getStringFlag(experimentKey: String, variable: String, dontCache: Boolean, ignoreCache: Boolean, promise: Promise) {
     try {
-      Log.d(NAME, "getStringFlag called - apiPath: $apiPath, variable: $variable, dontCache: $dontCache, ignoreCache: $ignoreCache")
+      Log.d(NAME, "getStringFlag called - experimentKey: $experimentKey, variable: $variable, dontCache: $dontCache, ignoreCache: $ignoreCache")
       
       val experimentPlugin = Ascend.getPlugin<DRSPlugin>(Plugins.EXPERIMENTS)
-      val result = experimentPlugin.getExperimentService().getStringFlag(apiPath, variable, dontCache, ignoreCache)
+      val result = experimentPlugin.getExperimentService().getStringFlag(experimentKey, variable, dontCache, ignoreCache)
       
       Log.d(NAME, "getStringFlag result: $result")
       promise.resolve(result)
@@ -269,10 +269,10 @@ class AscendReactNativeSdkModule(reactContext: ReactApplicationContext) :
     }
   }
 
-  override fun getBooleanFlag(apiPath: String, variable: String, dontCache: Boolean, ignoreCache: Boolean, promise: Promise) {
+  override fun getBooleanFlag(experimentKey: String, variable: String, dontCache: Boolean, ignoreCache: Boolean, promise: Promise) {
     try {
       val experimentPlugin = Ascend.getPlugin<DRSPlugin>(Plugins.EXPERIMENTS)
-      val result = experimentPlugin.getExperimentService().getBooleanFlag(apiPath, variable, dontCache, ignoreCache)
+      val result = experimentPlugin.getExperimentService().getBooleanFlag(experimentKey, variable, dontCache, ignoreCache)
       
       Log.d(NAME, "getBooleanFlag result: $result")
       promise.resolve(result)
@@ -282,10 +282,10 @@ class AscendReactNativeSdkModule(reactContext: ReactApplicationContext) :
     }
   }
 
-  override fun getNumberFlag(apiPath: String, variable: String, dontCache: Boolean, ignoreCache: Boolean, promise: Promise) {
+  override fun getNumberFlag(experimentKey: String, variable: String, dontCache: Boolean, ignoreCache: Boolean, promise: Promise) {
     try {
       val experimentPlugin = Ascend.getPlugin<DRSPlugin>(Plugins.EXPERIMENTS)
-      val result = experimentPlugin.getExperimentService().getDoubleFlag(apiPath, variable, dontCache, ignoreCache)
+      val result = experimentPlugin.getExperimentService().getDoubleFlag(experimentKey, variable, dontCache, ignoreCache)
       
       Log.d(NAME, "getNumberFlag result: $result")
       promise.resolve(result)
@@ -295,10 +295,10 @@ class AscendReactNativeSdkModule(reactContext: ReactApplicationContext) :
     }
   }
 
-  override fun getAllVariables(apiPath: String, promise: Promise) {
+  override fun getAllVariables(experimentKey: String, promise: Promise) {
     try {
       val experimentPlugin = Ascend.getPlugin<DRSPlugin>(Plugins.EXPERIMENTS)
-      val result = experimentPlugin.getExperimentService().getAllVariables(apiPath)
+      val result = experimentPlugin.getExperimentService().getAllVariables(experimentKey)
       
       val jsonString = result.toString()
       

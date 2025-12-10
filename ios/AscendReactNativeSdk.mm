@@ -85,14 +85,14 @@
     }
 }
 
-- (void)getStringFlag:(NSString *)apiPath
+- (void)getStringFlag:(NSString *)experimentKey
             variable:(NSString *)variable
            dontCache:(NSNumber *)dontCache
           ignoreCache:(NSNumber *)ignoreCache
              resolve:(RCTPromiseResolveBlock)resolve
               reject:(RCTPromiseRejectBlock)reject {
     @try {
-        [AscendReactNativeSdkSwift getStringFlag:apiPath
+        [AscendReactNativeSdkSwift getStringFlag:experimentKey
                                         variable:variable
                                        dontCache:[dontCache boolValue]
                                      ignoreCache:[ignoreCache boolValue]
@@ -104,14 +104,14 @@
     }
 }
 
-- (void)getBooleanFlag:(NSString *)apiPath
+- (void)getBooleanFlag:(NSString *)experimentKey
              variable:(NSString *)variable
             dontCache:(NSNumber *)dontCache
            ignoreCache:(NSNumber *)ignoreCache
               resolve:(RCTPromiseResolveBlock)resolve
                reject:(RCTPromiseRejectBlock)reject {
     @try {
-        [AscendReactNativeSdkSwift getBooleanFlag:apiPath
+        [AscendReactNativeSdkSwift getBooleanFlag:experimentKey
                                          variable:variable
                                         dontCache:[dontCache boolValue]
                                       ignoreCache:[ignoreCache boolValue]
@@ -123,14 +123,14 @@
     }
 }
 
-- (void)getNumberFlag:(NSString *)apiPath
+- (void)getNumberFlag:(NSString *)experimentKey
             variable:(NSString *)variable
            dontCache:(NSNumber *)dontCache
           ignoreCache:(NSNumber *)ignoreCache
              resolve:(RCTPromiseResolveBlock)resolve
               reject:(RCTPromiseRejectBlock)reject {
     @try {
-        [AscendReactNativeSdkSwift getNumberFlag:apiPath
+        [AscendReactNativeSdkSwift getNumberFlag:experimentKey
                                         variable:variable
                                        dontCache:[dontCache boolValue]
                                      ignoreCache:[ignoreCache boolValue]
@@ -142,11 +142,11 @@
     }
 }
 
-- (void)getAllVariables:(NSString *)apiPath
+- (void)getAllVariables:(NSString *)experimentKey
                 resolve:(RCTPromiseResolveBlock)resolve
                  reject:(RCTPromiseRejectBlock)reject {
     @try {
-        [AscendReactNativeSdkSwift getAllVariables:apiPath completion:^(NSString *result) {
+        [AscendReactNativeSdkSwift getAllVariables:experimentKey completion:^(NSString *result) {
             resolve(result ?: @"");
         }];
     } @catch (NSException *exception) {
