@@ -18,8 +18,8 @@ end
 
 target 'AscendReactNativeSdkExample' do
   # Ascend iOS SDK dependency (required by AscendReactNativeSdk)
-  # Using git repository with tag v1.4.0
-  pod 'Ascend', :git => 'https://github.com/dream11/ascend-ios.git', :tag => 'v1.4.0'
+  # Using git repository from dream-horizon-org
+  pod 'Ascend', :git => 'https://github.com/dream-horizon-org/ascend-ios.git', :branch => 'main'
   
   config = use_native_modules!
 

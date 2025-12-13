@@ -11,7 +11,7 @@ Pod::Spec.new do |s|
   s.authors      = package["author"]
 
   s.platforms    = { :ios => min_ios_version_supported }
-  s.source       = { :git => "https://github.com/dream11/ascend-react-native/react-native-ascend-react-native-sdk.git", :tag => "#{s.version}" }
+  s.source       = { :git => "https://github.com/dream-horizon-org/ascend-rn-sdk.git", :tag => "#{s.version}" }
 
   s.source_files = "ios/**/*.{h,m,mm,cpp,swift}"
   s.private_header_files = "ios/**/*.h"
@@ -23,7 +23,8 @@ Pod::Spec.new do |s|
   # The auto-generated Swift header (AscendReactNativeSdk-Swift.h) will be created automatically
 
   # Dependencies
-  # Note: The Ascend dependency source must be specified in the Podfile
+  # Note: The Ascend dependency source must be specified in the consumer's Podfile:
+  # pod 'Ascend', :git => 'https://github.com/dream-horizon-org/ascend-ios.git', :branch => 'main'
   # CocoaPods doesn't allow :git in podspec dependencies
   s.dependency 'Ascend'
 
