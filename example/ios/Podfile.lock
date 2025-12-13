@@ -1,5 +1,7 @@
 PODS:
+  - Ascend (1.0.0)
   - AscendReactNativeSdk (0.1.0):
+    - Ascend
     - boost
     - DoubleConversion
     - fast_float
@@ -2285,6 +2287,7 @@ PODS:
   - Yoga (0.0.0)
 
 DEPENDENCIES:
+  - Ascend (from `https://github.com/dream-horizon-org/ascend-ios.git`, branch `main`)
   - AscendReactNativeSdk (from `../..`)
   - boost (from `../node_modules/react-native/third-party-podspecs/boost.podspec`)
   - DoubleConversion (from `../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec`)
@@ -2365,6 +2368,9 @@ SPEC REPOS:
     - SocketRocket
 
 EXTERNAL SOURCES:
+  Ascend:
+    :branch: main
+    :git: https://github.com/dream-horizon-org/ascend-ios.git
   AscendReactNativeSdk:
     :path: "../.."
   boost:
@@ -2511,8 +2517,14 @@ EXTERNAL SOURCES:
   Yoga:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
+CHECKOUT OPTIONS:
+  Ascend:
+    :commit: 698aafc3f76065f8ab0e1f197e987a68e90242a1
+    :git: https://github.com/dream-horizon-org/ascend-ios.git
+
 SPEC CHECKSUMS:
-  AscendReactNativeSdk: 07ef9f7188ecd077236c398d587bd1cad04b2f2e
+  Ascend: bef288f9a5fd2806188fbd5ed97cead1689582d2
+  AscendReactNativeSdk: a3c771885ce2da94f0f2b7ce716a46d780860b44
   boost: 7e761d76ca2ce687f7cc98e698152abd03a18f90
   DoubleConversion: cb417026b2400c8f53ae97020b2be961b59470cb
   fast_float: b32c788ed9c6a8c584d114d0047beda9664e7cc6
@@ -2586,6 +2598,6 @@ SPEC CHECKSUMS:
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
   Yoga: 11c9686a21e2cd82a094a723649d9f4507200fb0
 
-PODFILE CHECKSUM: b2d9b8bc510e9c788d59d1a819940e12f90eeb95
+PODFILE CHECKSUM: 199079ebe0473fbd4ec988c94fee45be3c331d21
 
 COCOAPODS: 1.15.2
