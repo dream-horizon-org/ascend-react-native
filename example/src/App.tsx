@@ -6,6 +6,7 @@ import {
   ScrollView,
   TouchableOpacity,
   TextInput,
+  Platform,
 } from 'react-native';
 import {
   Ascend,
@@ -17,24 +18,38 @@ export default function App() {
   const [status, setStatus] = useState<string>('Not initialized');
   const [result, setResult] = useState<string>('');
   const [userIdInput, setUserIdInput] = useState<string>('148925305');
-  const [guestIdInput, setGuestIdInput] = useState<string>('');
+  const [stableIdInput, setStableIdInput] = useState<string>('');
+
+  // For physical iOS devices, replace 'localhost' with your Mac's IP address
+  // Find your IP: System Settings > Network, or run `ipconfig getifaddr en0` in terminal
+  const API_PORT = '8100';
+  const getApiBaseUrl = () => {
+    if (Platform.OS === 'android') {
+      return `http://10.0.2.2:${API_PORT}`;
+    }
+    // iOS Simulator: use localhost
+    // iOS Physical Device: use your Mac's IP (e.g., 'http://192.168.1.100:8100')
+    return `http://127.0.0.1:${API_PORT}`;
+  };
 
   const handleInitialize = async () => {
+    const apiBaseUrl = getApiBaseUrl();
+
     const config: AscendConfig = {
       httpConfig: {
-        apiBaseUrl: 'http://10.0.2.2:8100',
+        apiBaseUrl,
       },
       plugins: [
         {
           name: 'EXPERIMENTS',
           config: {
             httpConfig: {
-              apiBaseUrl: 'http://10.0.2.2:8100',
+              apiBaseUrl,
             },
             shouldFetchOnInit: true,
             shouldRefreshDRSOnForeground: false,
             defaultValues: {
-              rn_sdk_test2: {
+              common_test: {
                 color: 'blue',
                 prime: true,
                 boolean: false,
@@ -70,7 +85,7 @@ export default function App() {
     }
     try {
       const defaultValues = {
-        rn_sdk_test2: {
+        common_test: {
           color: 'blue',
           boolean: false,
           prime: true,
@@ -118,7 +133,7 @@ export default function App() {
       switch (type) {
         case 'boolean':
           value = await Experiments.getBooleanFlag(
-            'rn_sdk_test2',
+            'common_test',
             variable,
             false,
             false
@@ -126,7 +141,7 @@ export default function App() {
           break;
         case 'number':
           value = await Experiments.getNumberFlag(
-            'rn_sdk_test2',
+            'common_test',
             variable,
             false,
             false
@@ -134,7 +149,7 @@ export default function App() {
           break;
         case 'string':
           value = await Experiments.getStringFlag(
-            'rn_sdk_test2',
+            'common_test',
             variable,
             false,
             false
@@ -153,7 +168,7 @@ export default function App() {
       return;
     }
     try {
-      const variables = await Experiments.getAllVariables('rn_sdk_test2');
+      const variables = await Experiments.getAllVariables('common_test');
       setResult(JSON.stringify(variables) || 'No variables found');
     } catch (error) {
       setResult(`Error: ${error}`);
@@ -229,35 +244,35 @@ export default function App() {
     }
   };
 
-  const handleSetGuest = async () => {
+  const handleSetStableId = async () => {
     if (!(await Ascend.isInitialized())) {
       setResult('SDK not initialized');
       return;
     }
-    if (!guestIdInput.trim()) {
-      setResult('Please enter a guest ID');
+    if (!stableIdInput.trim()) {
+      setResult('Please enter a stable ID');
       return;
     }
     try {
-      const success = await Ascend.setStableId(guestIdInput.trim());
+      const success = await Ascend.setStableId(stableIdInput.trim());
       setResult(
         success
-          ? `Guest set successfully: ${guestIdInput.trim()} ✅`
-          : 'Failed to set guest ❌'
+          ? `Stable ID set successfully: ${stableIdInput.trim()} ✅`
+          : 'Failed to set stable ID ❌'
       );
     } catch (error) {
       setResult(`Error: ${error}`);
     }
   };
 
-  const handleGetGuestId = async () => {
+  const handleGetStableId = async () => {
     if (!(await Ascend.isInitialized())) {
       setResult('SDK not initialized');
       return;
     }
     try {
-      const guestId = await Ascend.getStableId();
-      setResult(`Guest ID: ${guestId || '(empty)'}`);
+      const stableId = await Ascend.getStableId();
+      setResult(`Stable ID: ${stableId || '(empty)'}`);
     } catch (error) {
       setResult(`Error: ${error}`);
     }
@@ -337,16 +352,16 @@ export default function App() {
         </TouchableOpacity>
         <TextInput
           style={styles.input}
-          placeholder="Enter Guest ID"
-          value={guestIdInput}
-          onChangeText={setGuestIdInput}
+          placeholder="Enter Stable ID"
+          value={stableIdInput}
+          onChangeText={setStableIdInput}
           autoCapitalize="none"
         />
-        <TouchableOpacity style={styles.button} onPress={handleSetGuest}>
-          <Text style={styles.buttonText}>Set Guest</Text>
+        <TouchableOpacity style={styles.button} onPress={handleSetStableId}>
+          <Text style={styles.buttonText}>Set Stable ID</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={handleGetGuestId}>
-          <Text style={styles.buttonText}>Get Guest ID</Text>
+        <TouchableOpacity style={styles.button} onPress={handleGetStableId}>
+          <Text style={styles.buttonText}>Get Stable ID</Text>
         </TouchableOpacity>
       </View>
 
