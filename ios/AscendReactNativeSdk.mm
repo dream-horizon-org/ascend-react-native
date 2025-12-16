@@ -67,7 +67,7 @@
             resolve:(RCTPromiseResolveBlock)resolve
              reject:(RCTPromiseRejectBlock)reject {
     @try {
-        [AscendReactNativeSdkSwift setStableId:stableId completion:^(BOOL result) {
+        [AscendReactNativeSdkSwift setGuest:stableId completion:^(BOOL result) {
             resolve(@(result));
         }];
     } @catch (NSException *exception) {
@@ -77,7 +77,7 @@
 
 - (void)getStableId:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
     @try {
-        [AscendReactNativeSdkSwift getStableIdWithCompletion:^(NSString *result) {
+        [AscendReactNativeSdkSwift getGuestIdWithCompletion:^(NSString *result) {
             resolve(result ?: @"");
         }];
     } @catch (NSException *exception) {

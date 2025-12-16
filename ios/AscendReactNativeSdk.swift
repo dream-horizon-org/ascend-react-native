@@ -81,15 +81,35 @@ import Ascend
                     if pluginName.uppercased() == "EXPERIMENTS" {
                         let pluginConfigDict = pluginDict["config"] as? [String: Any] ?? [:]
                         
-                        let experimentsApiBaseUrl = (pluginConfigDict["apiBaseUrl"] as? String) ?? httpConfig.apiBaseUrl
-                        let experimentsApiEndpoint = (pluginConfigDict["apiEndpoint"] as? String) ?? "/v1/users/experiments"
+                        // Check for httpConfig nested object first, then fall back to direct apiBaseUrl
+                        var experimentsApiBaseUrl = httpConfig.apiBaseUrl
+                        var experimentsApiEndpoint = "/v1/users/experiments"
+                        var experimentsHeaders: [String: String] = [:]
+                        
+                        if let pluginHttpConfig = pluginConfigDict["httpConfig"] as? [String: Any] {
+                            // Plugin has nested httpConfig
+                            experimentsApiBaseUrl = (pluginHttpConfig["apiBaseUrl"] as? String) ?? experimentsApiBaseUrl
+                            experimentsApiEndpoint = (pluginHttpConfig["apiEndpoint"] as? String) ?? experimentsApiEndpoint
+                            experimentsHeaders = extractHeaders(from: pluginHttpConfig["headers"])
+                        } else {
+                            // Fallback to direct properties
+                            experimentsApiBaseUrl = (pluginConfigDict["apiBaseUrl"] as? String) ?? experimentsApiBaseUrl
+                            experimentsApiEndpoint = (pluginConfigDict["apiEndpoint"] as? String) ?? experimentsApiEndpoint
+                            experimentsHeaders = extractHeaders(from: pluginConfigDict["headers"])
+                        }
+                        
                         let shouldFetchOnInit = (pluginConfigDict["shouldFetchOnInit"] as? NSNumber)?.boolValue ?? true
                         let shouldRefreshOnForeground = (pluginConfigDict["shouldRefreshDRSOnForeground"] as? NSNumber)?.boolValue ?? 
                                                          (pluginConfigDict["shouldRefreshOnForeground"] as? NSNumber)?.boolValue ?? true
                         let shouldFetchOnLogout = (pluginConfigDict["shouldFetchOnLogout"] as? NSNumber)?.boolValue ?? false
                         let enableCaching = (pluginConfigDict["enableCaching"] as? NSNumber)?.boolValue ?? true
                         let enableDebugLogging = (pluginConfigDict["enableDebugLogging"] as? NSNumber)?.boolValue ?? false
-                        let experimentsHeaders = extractHeaders(from: pluginConfigDict["headers"])
+                        
+                        print("[AscendReactNativeSdk] Experiments config:")
+                        print("  - apiBaseUrl: \(experimentsApiBaseUrl)")
+                        print("  - apiEndpoint: \(experimentsApiEndpoint)")
+                        print("  - shouldFetchOnInit: \(shouldFetchOnInit)")
+                        print("  - enableDebugLogging: \(enableDebugLogging)")
                         
                         var defaultValues: [String: ExperimentVariable] = [:]
                         if let defaultValuesDict = pluginConfigDict["defaultValues"] as? [String: Any] {
@@ -182,10 +202,16 @@ import Ascend
     
     @objc public static func getBooleanFlag(_ experimentKey: String, variable: String, dontCache: Bool, ignoreCache: Bool, completion: @escaping (Bool) -> Void) {
         guard isValidInput(experimentKey, variable), let experiments = try? getExperimentsPlugin() else {
+            print("[AscendReactNativeSdk] getBooleanFlag failed: Invalid input or plugin not found")
             completion(false)
             return
         }
+        
+        print("[AscendReactNativeSdk] getBooleanFlag - experimentKey: \(experimentKey), variable: \(variable), dontCache: \(dontCache), ignoreCache: \(ignoreCache)")
+        
         let result = experiments.getBoolValue(for: experimentKey, with: variable, dontCache: dontCache, ignoreCache: ignoreCache)
+        
+        print("[AscendReactNativeSdk] getBooleanFlag result: \(result)")
         completion(result)
     }
     
@@ -216,28 +242,54 @@ import Ascend
     
     @objc public static func getStringFlag(_ experimentKey: String, variable: String, dontCache: Bool, ignoreCache: Bool, completion: @escaping (String) -> Void) {
         guard isValidInput(experimentKey, variable), let experiments = try? getExperimentsPlugin() else {
+            print("[AscendReactNativeSdk] getStringFlag failed: Invalid input or plugin not found")
             completion("")
             return
         }
+        
+        print("[AscendReactNativeSdk] getStringFlag - experimentKey: \(experimentKey), variable: \(variable), dontCache: \(dontCache), ignoreCache: \(ignoreCache)")
+        
         let result = experiments.getStringValue(for: experimentKey, with: variable, dontCache: dontCache, ignoreCache: ignoreCache)
+        
+        print("[AscendReactNativeSdk] getStringFlag result: '\(result)'")
         completion(result)
     }
     
     @objc public static func getAllVariables(_ experimentKey: String, completion: @escaping (String) -> Void) {
         guard Ascend.isInitialized(), !experimentKey.isEmpty else {
+            print("[AscendReactNativeSdk] getAllVariables failed: SDK not initialized or empty key")
             completion("")
             return
         }
-        let result = try? getExperimentsPlugin().getAllVariablesJSON(for: experimentKey)
+        
+        print("[AscendReactNativeSdk] getAllVariables - experimentKey: \(experimentKey)")
+        
+        guard let experiments = try? getExperimentsPlugin() else {
+            print("[AscendReactNativeSdk] getAllVariables failed: Could not get experiments plugin")
+            completion("")
+            return
+        }
+        
+        let result = try? experiments.getAllVariablesJSON(for: experimentKey)
+        
+        print("[AscendReactNativeSdk] getAllVariables result: \(result ?? "nil")")
         completion(result ?? "")
     }
     
     @objc public static func getExperimentVariants(completion: @escaping (String) -> Void) {
         guard let experiments = try? getExperimentsPlugin() else {
+            print("[AscendReactNativeSdk] getExperimentVariants failed: Could not get experiments plugin")
             completion("{}")
             return
         }
+        
         let variants = experiments.getExperimentVariants()
+        
+        print("[AscendReactNativeSdk] getExperimentVariants - found \(variants.count) variants:")
+        for (experimentKey, variant) in variants {
+            print("  - \(experimentKey): experimentId=\(variant.experimentId), variantName=\(variant.variantName)")
+        }
+        
         var variantsDict: [String: [String: String]] = [:]
         for (experimentKey, variant) in variants {
             variantsDict[experimentKey] = [
@@ -248,8 +300,10 @@ import Ascend
         do {
             let jsonData = try JSONSerialization.data(withJSONObject: variantsDict, options: [])
             let jsonString = String(data: jsonData, encoding: .utf8) ?? "{}"
+            print("[AscendReactNativeSdk] getExperimentVariants result: \(jsonString)")
             completion(jsonString)
         } catch {
+            print("[AscendReactNativeSdk] getExperimentVariants JSON serialization error: \(error)")
             completion("{}")
         }
     }
@@ -288,29 +342,44 @@ import Ascend
     
     @objc public static func fetchExperiments(_ defaultValues: NSDictionary, completion: @escaping (Bool) -> Void) {
         guard Ascend.isInitialized() else {
+            print("[AscendReactNativeSdk] fetchExperiments failed: SDK not initialized")
             completion(false)
             return
         }
         
         guard let defaultValuesDict = defaultValues as? [String: Any] else {
+            print("[AscendReactNativeSdk] fetchExperiments failed: Invalid defaultValues format")
             completion(false)
             return
         }
         
         let experimentKeys = Array(defaultValuesDict.keys)
         guard !experimentKeys.isEmpty else {
+            print("[AscendReactNativeSdk] fetchExperiments failed: No experiment keys provided")
             completion(false)
             return
         }
+        
+        print("[AscendReactNativeSdk] fetchExperiments called with keys: \(experimentKeys)")
         
         do {
             let experiments = try getExperimentsPlugin()
             let experimentKeysDict = Dictionary(uniqueKeysWithValues: experimentKeys.map { ($0, ExperimentVariable.dictionary([:])) })
             
             experiments.fetchExperiments(for: experimentKeysDict) { response, error in
-                completion(response != nil && error == nil)
+                if let error = error {
+                    print("[AscendReactNativeSdk] fetchExperiments error: \(error)")
+                    completion(false)
+                } else if response != nil {
+                    print("[AscendReactNativeSdk] fetchExperiments success")
+                    completion(true)
+                } else {
+                    print("[AscendReactNativeSdk] fetchExperiments failed: No response and no error")
+                    completion(false)
+                }
             }
         } catch {
+            print("[AscendReactNativeSdk] fetchExperiments exception: \(error)")
             completion(false)
         }
     }
