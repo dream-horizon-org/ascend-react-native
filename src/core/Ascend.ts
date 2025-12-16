@@ -18,6 +18,7 @@ export interface HTTPConfig {
   headers?: { [key: string]: string }; // Default headers for all requests
   shouldRetry?: boolean; // Whether to retry failed requests
   apiBaseUrl: string; // Base URL for API requests
+  apiEndpoint?: string; // API endpoint path (e.g., '/v1/allocations/')
   retrialConfig?: RetrialConfig; // Retry configuration
   timeoutConfig?: TimeoutConfig; // Timeout configuration
 }

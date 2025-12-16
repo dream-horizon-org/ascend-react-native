@@ -45,6 +45,10 @@ export default function App() {
           config: {
             httpConfig: {
               apiBaseUrl,
+              apiEndpoint: '/v1/allocations/',
+              headers: {
+                'x-experiment-keys': 'common_test',
+              },
             },
             shouldFetchOnInit: true,
             shouldRefreshDRSOnForeground: false,
@@ -84,6 +88,7 @@ export default function App() {
       return;
     }
     try {
+      console.log('[App] Fetching experiments...');
       const defaultValues = {
         common_test: {
           color: 'blue',
@@ -93,12 +98,14 @@ export default function App() {
         },
       };
       const success = await Experiments.fetchExperiments(defaultValues);
+      console.log('[App] fetchExperiments result:', success);
       setResult(
         success
           ? 'Experiments fetched successfully'
           : 'Failed to fetch experiments'
       );
     } catch (error) {
+      console.error('[App] Error fetching experiments:', error);
       setResult(`Error: ${error}`);
     }
   };
@@ -129,6 +136,7 @@ export default function App() {
       return;
     }
     try {
+      console.log(`[App] Getting ${type} flag for: ${variable}`);
       let value: any;
       switch (type) {
         case 'boolean':
@@ -138,6 +146,7 @@ export default function App() {
             false,
             false
           );
+          console.log(`[App] getBooleanFlag result:`, value);
           break;
         case 'number':
           value = await Experiments.getNumberFlag(
@@ -146,6 +155,7 @@ export default function App() {
             false,
             false
           );
+          console.log(`[App] getNumberFlag result:`, value);
           break;
         case 'string':
           value = await Experiments.getStringFlag(
@@ -154,10 +164,12 @@ export default function App() {
             false,
             false
           );
+          console.log(`[App] getStringFlag result:`, value);
           break;
       }
       setResult(`${variable}: ${JSON.stringify(value)}`);
     } catch (error) {
+      console.error(`[App] Error getting ${type} flag:`, error);
       setResult(`Error: ${error}`);
     }
   };
@@ -168,9 +180,12 @@ export default function App() {
       return;
     }
     try {
+      console.log('[App] Getting all variables for: common_test');
       const variables = await Experiments.getAllVariables('common_test');
-      setResult(JSON.stringify(variables) || 'No variables found');
+      console.log('[App] getAllVariables result:', variables);
+      setResult(JSON.stringify(variables, null, 2) || 'No variables found');
     } catch (error) {
+      console.error('[App] Error getting all variables:', error);
       setResult(`Error: ${error}`);
     }
   };
@@ -190,9 +205,12 @@ export default function App() {
       return;
     }
     try {
+      console.log('[App] Getting experiment variants');
       const variants = await Experiments.getExperimentVariants();
+      console.log('[App] getExperimentVariants result:', variants);
       setResult(JSON.stringify(variants, null, 2) || 'No variants found');
     } catch (error) {
+      console.error('[App] Error getting experiment variants:', error);
       setResult(`Error: ${error}`);
     }
   };
