@@ -182,24 +182,7 @@ import Ascend
         }
         completion(Ascend.user.getUserId())
     }
-    
-    @objc public static func setGuest(_ guestId: String, completion: @escaping (Bool) -> Void) {
-        guard Ascend.isInitialized() else {
-            completion(false)
-            return
-        }
-        Ascend.user.setGuest(guestId: guestId)
-        completion(true)
-    }
-    
-    @objc public static func getGuestId(completion: @escaping (String) -> Void) {
-        guard Ascend.isInitialized() else {
-            completion("")
-            return
-        }
-        completion(Ascend.user.getGuestId())
-    }
-    
+        
     @objc public static func getBooleanFlag(_ experimentKey: String, variable: String, dontCache: Bool, ignoreCache: Bool, completion: @escaping (Bool) -> Void) {
         guard isValidInput(experimentKey, variable), let experiments = try? getExperimentsPlugin() else {
             print("[AscendReactNativeSdk] getBooleanFlag failed: Invalid input or plugin not found")

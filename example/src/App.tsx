@@ -18,7 +18,6 @@ export default function App() {
   const [status, setStatus] = useState<string>('Not initialized');
   const [result, setResult] = useState<string>('');
   const [userIdInput, setUserIdInput] = useState<string>('148925305');
-  const [stableIdInput, setStableIdInput] = useState<string>('');
 
   // For physical iOS devices, replace 'localhost' with your Mac's IP address
   // Find your IP: System Settings > Network, or run `ipconfig getifaddr en0` in terminal
@@ -262,40 +261,6 @@ export default function App() {
     }
   };
 
-  const handleSetStableId = async () => {
-    if (!(await Ascend.isInitialized())) {
-      setResult('SDK not initialized');
-      return;
-    }
-    if (!stableIdInput.trim()) {
-      setResult('Please enter a stable ID');
-      return;
-    }
-    try {
-      const success = await Ascend.setStableId(stableIdInput.trim());
-      setResult(
-        success
-          ? `Stable ID set successfully: ${stableIdInput.trim()} ✅`
-          : 'Failed to set stable ID ❌'
-      );
-    } catch (error) {
-      setResult(`Error: ${error}`);
-    }
-  };
-
-  const handleGetStableId = async () => {
-    if (!(await Ascend.isInitialized())) {
-      setResult('SDK not initialized');
-      return;
-    }
-    try {
-      const stableId = await Ascend.getStableId();
-      setResult(`Stable ID: ${stableId || '(empty)'}`);
-    } catch (error) {
-      setResult(`Error: ${error}`);
-    }
-  };
-
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       <Text style={styles.title}>Ascend SDK Playground</Text>
@@ -367,19 +332,6 @@ export default function App() {
         </TouchableOpacity>
         <TouchableOpacity style={styles.button} onPress={handleGetUserId}>
           <Text style={styles.buttonText}>Get User ID</Text>
-        </TouchableOpacity>
-        <TextInput
-          style={styles.input}
-          placeholder="Enter Stable ID"
-          value={stableIdInput}
-          onChangeText={setStableIdInput}
-          autoCapitalize="none"
-        />
-        <TouchableOpacity style={styles.button} onPress={handleSetStableId}>
-          <Text style={styles.buttonText}>Set Stable ID</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={handleGetStableId}>
-          <Text style={styles.buttonText}>Get Stable ID</Text>
         </TouchableOpacity>
       </View>
 
