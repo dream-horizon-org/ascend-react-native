@@ -232,28 +232,7 @@ class AscendReactNativeSdkModule(reactContext: ReactApplicationContext) :
       promise.reject("ERROR", "Failed to get user id: ${e.message}", e)
     }
   }
-
-  override fun setStableId(stableId: String, promise: Promise) {
-    try {
-      AscendUser.setStable(stableId)
-      promise.resolve(true)
-    } catch (e: Exception) {
-      Log.e(NAME, "Error in setStableId: ${e.message}", e)
-      promise.reject("ERROR", "Failed to set stable id: ${e.message}", e)
-    }
-  }
-
-  override fun getStableId(promise: Promise) {
-    try {
-        val stableId = AscendUser.stableId
-      Log.d(NAME, "getStableId result: $stableId")
-      promise.resolve(stableId)
-    } catch (e: Exception) {
-      Log.e(NAME, "Error in getStableId: ${e.message}", e)
-      promise.reject("ERROR", "Failed to get stable id: ${e.message}", e)
-    }
-  }
-
+  
   override fun getStringFlag(experimentKey: String, variable: String, dontCache: Boolean, ignoreCache: Boolean, promise: Promise) {
     try {
       Log.d(NAME, "getStringFlag called - experimentKey: $experimentKey, variable: $variable, dontCache: $dontCache, ignoreCache: $ignoreCache")

@@ -69,12 +69,6 @@ const Ascend = {
   getUserId: (): Promise<string> => {
     return AscendReactNativeSdk.getUserId();
   },
-  setStableId: (stableId: string): Promise<boolean> => {
-    return AscendReactNativeSdk.setStableId(stableId);
-  },
-  getStableId: (): Promise<string> => {
-    return AscendReactNativeSdk.getStableId();
-  },
 };
 
 export default Ascend;

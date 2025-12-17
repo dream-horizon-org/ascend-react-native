@@ -63,28 +63,6 @@
     }
 }
 
-- (void)setStableId:(NSString *)stableId
-            resolve:(RCTPromiseResolveBlock)resolve
-             reject:(RCTPromiseRejectBlock)reject {
-    @try {
-        [AscendReactNativeSdkSwift setGuest:stableId completion:^(BOOL result) {
-            resolve(@(result));
-        }];
-    } @catch (NSException *exception) {
-        reject(@"EXCEPTION", [NSString stringWithFormat:@"Exception: %@", exception.reason ?: @"Unknown exception"], nil);
-    }
-}
-
-- (void)getStableId:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
-    @try {
-        [AscendReactNativeSdkSwift getGuestIdWithCompletion:^(NSString *result) {
-            resolve(result ?: @"");
-        }];
-    } @catch (NSException *exception) {
-        reject(@"EXCEPTION", [NSString stringWithFormat:@"Exception: %@", exception.reason ?: @"Unknown exception"], nil);
-    }
-}
-
 - (void)getStringFlag:(NSString *)experimentKey
             variable:(NSString *)variable
            dontCache:(NSNumber *)dontCache
