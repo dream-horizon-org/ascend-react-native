@@ -1,8 +1,8 @@
 {
-  "name": "react-native-ascend-react-native-sdk",
+  "name": "@dream-horizon-org/ascend-rn-sdk",
   "version": "0.1.0",
   "publishConfig": {
-    "registry": "https://npm.pkg.github.com/"
+    "registry": "https://registry.npmjs.org/"
   },
   "description": "ascend react native package",
   "main": "./lib/module/index.js",

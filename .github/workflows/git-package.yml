@@ -1,54 +1,62 @@
-name: Publish GitHub Package
+name: Publish npm package
 
 on:
   release:
     types: [published]
 
-permissions:
-  contents: read
-  packages: write
-
 jobs:
   publish:
     runs-on: ubuntu-latest
+    name: Publish to npm
 
-steps:
-      - name: Checkout
+    steps:
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Enable Corepack
-        run: corepack enable
-      
-      - name: Setup
-        uses: ./.github/actions/setup
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
         with:
           node-version: 18
-          registry-url: https://npm.pkg.github.com/
+          registry-url: 'https://registry.npmjs.org/'
 
-      - name: Configure npm for GitHub Packages
+      - name: Extract version from Git tag (strip leading 'v' if exists)
+        id: version
         run: |
-          echo "@dream11:registry=https://npm.pkg.github.com" >> ~/.npmrc
-          echo "//npm.pkg.github.com/:_authToken=${GITHUB_TOKEN}" >> ~/.npmrc
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG="${GITHUB_REF#refs/tags/}"
+          VERSION="${TAG#v}" # removes 'v' prefix if present
+          echo "RELEASE_VERSION=$VERSION" >> $GITHUB_ENV
+          echo "🔖 Release version: $VERSION"
 
+      - name: Validate version format
+        run: |
+          if [[ ! "$RELEASE_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "❌ Invalid version format: $RELEASE_VERSION"
+            exit 1
+          fi
 
-      - name: Install deps
-        run: yarn install
+      - name: Check if version already exists on npm
+        run: |
+          PACKAGE_NAME=$(jq -r .name package.json)
+          if npm view "$PACKAGE_NAME@$RELEASE_VERSION" > /dev/null 2>&1; then
+            echo "❌ Version $RELEASE_VERSION already exists on npm."
+            exit 1
+          fi
 
-      - name: Build
+      - name: Set package.json version (without git tag)
+        run: |
+          npm version --no-git-tag-version "$RELEASE_VERSION"
+
+      - name: Clean old lib (if exists)
+        run: |
+          if [ -d lib ]; then rm -rf lib; fi
+
+      - name: Install dependencies
+        run: yarn install --immutable
+
+      - name: Build with bob
         run: yarn prepare
 
-      - name: Set version from tag
-        run: |
-          TAG="v1"
-          VERSION="v1.0.0"
-          npm version --no-git-tag-version "$VERSION"
-
-      - name: Publish
-        run: npm publish --registry=https://npm.pkg.github.com
+      - name: Publish to npm
+        run: npm publish --access public
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
