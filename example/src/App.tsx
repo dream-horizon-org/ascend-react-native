@@ -55,7 +55,7 @@ export default function App() {
             defaultValues: {
               [Experiment_Key]: {
                 color: 'blue',
-                prime: true,
+                prime: false,
                 boolean: false,
                 number: 0,
               },
@@ -80,7 +80,7 @@ export default function App() {
       [Experiment_Key]: {
         color: 'blue',
         boolean: false,
-        prime: true,
+        prime: false,
         number: 0,
       },
     };

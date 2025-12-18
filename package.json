@@ -1,9 +1,6 @@
 {
   "name": "react-native-ascend-react-native-sdk",
   "version": "0.1.0",
-  "publishConfig": {
-    "registry": "https://npm.pkg.github.com/"
-  },
   "description": "ascend react native package",
   "main": "./lib/module/index.js",
   "types": "./lib/typescript/src/index.d.ts",
@@ -52,14 +49,14 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/dream11/ascend-react-native/react-native-ascend-react-native-sdk.git"
+    "url": "git+https://github.com/YOUR-ORG/ascend-react-native-sdk.git"
   },
-  "author": "Prakhar Dixit <prakhar.dixit@dream11.com> (https://github.com/dream11/ascend-react-native)",
+  "author": "YOUR_NAME <your.email@example.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/dream11/ascend-react-native/react-native-ascend-react-native-sdk/issues"
+    "url": "https://github.com/YOUR-ORG/ascend-react-native-sdk/issues"
   },
-  "homepage": "https://github.com/dream11/ascend-react-native/react-native-ascend-react-native-sdk#readme",
+  "homepage": "https://github.com/YOUR-ORG/ascend-react-native-sdk#readme",
   "devDependencies": {
     "@commitlint/config-conventional": "^19.8.1",
     "@eslint/compat": "^1.3.2",
