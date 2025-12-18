@@ -214,6 +214,10 @@ class AscendReactNativeSdkModule(reactContext: ReactApplicationContext) :
   }
 
   override fun setUser(userId: String, promise: Promise) {
+    if (!Ascend.isAscendInitialised()) {
+      promise.resolve(false)
+      return
+    }
     try {
       AscendUser.setUser(userId)
       promise.resolve(true)
@@ -223,17 +227,26 @@ class AscendReactNativeSdkModule(reactContext: ReactApplicationContext) :
     }
   }
   override fun getUserId(promise: Promise) {
+    if (!Ascend.isAscendInitialised()) {
+      promise.resolve("")
+      return
+    }
     try {
       val userId = AscendUser.userId
       Log.d(NAME, "getUserId result: $userId")
-      promise.resolve(userId)
+      promise.resolve(userId ?: "")
     } catch (e: Exception) {
       Log.e(NAME, "Error in getUserId: ${e.message}", e)
-      promise.reject("ERROR", "Failed to get user id: ${e.message}", e)
+      promise.resolve("")
     }
   }
   
   override fun getStringFlag(experimentKey: String, variable: String, dontCache: Boolean, ignoreCache: Boolean, promise: Promise) {
+    if (!Ascend.isAscendInitialised() || experimentKey.isEmpty() || variable.isEmpty()) {
+      Log.d(NAME, "getStringFlag failed: Invalid input or SDK not initialized")
+      promise.resolve("")
+      return
+    }
     try {
       Log.d(NAME, "getStringFlag called - experimentKey: $experimentKey, variable: $variable, dontCache: $dontCache, ignoreCache: $ignoreCache")
       
@@ -241,14 +254,19 @@ class AscendReactNativeSdkModule(reactContext: ReactApplicationContext) :
       val result = experimentPlugin.getExperimentService().getStringFlag(experimentKey, variable, dontCache, ignoreCache)
       
       Log.d(NAME, "getStringFlag result: $result")
-      promise.resolve(result)
+      promise.resolve(result ?: "")
     } catch (e: Exception) {
       Log.e(NAME, "Error in getStringFlag: ${e.message}", e)
-      promise.reject("ERROR", "Failed to get string flag: ${e.message}", e)
+      promise.resolve("")
     }
   }
 
   override fun getBooleanFlag(experimentKey: String, variable: String, dontCache: Boolean, ignoreCache: Boolean, promise: Promise) {
+    if (!Ascend.isAscendInitialised() || experimentKey.isEmpty() || variable.isEmpty()) {
+      Log.d(NAME, "getBooleanFlag failed: Invalid input or SDK not initialized")
+      promise.resolve(false)
+      return
+    }
     try {
       val experimentPlugin = Ascend.getPlugin<DRSPlugin>(Plugins.EXPERIMENTS)
       val result = experimentPlugin.getExperimentService().getBooleanFlag(experimentKey, variable, dontCache, ignoreCache)
@@ -257,11 +275,15 @@ class AscendReactNativeSdkModule(reactContext: ReactApplicationContext) :
       promise.resolve(result)
     } catch (e: Exception) {
       Log.e(NAME, "Error in getBooleanFlag: ${e.message}", e)
-      promise.reject("ERROR", "Failed to get boolean flag: ${e.message}", e)
+      promise.resolve(false)
     }
   }
 
   override fun getNumberFlag(experimentKey: String, variable: String, dontCache: Boolean, ignoreCache: Boolean, promise: Promise) {
+    if (!Ascend.isAscendInitialised() || experimentKey.isEmpty() || variable.isEmpty()) {
+      promise.resolve(0.0)
+      return
+    }
     try {
       val experimentPlugin = Ascend.getPlugin<DRSPlugin>(Plugins.EXPERIMENTS)
       val result = experimentPlugin.getExperimentService().getDoubleFlag(experimentKey, variable, dontCache, ignoreCache)
@@ -270,26 +292,35 @@ class AscendReactNativeSdkModule(reactContext: ReactApplicationContext) :
       promise.resolve(result)
     } catch (e: Exception) {
       Log.e(NAME, "Error in getNumberFlag: ${e.message}", e)
-      promise.reject("ERROR", "Failed to get number flag: ${e.message}", e)
+      promise.resolve(0.0)
     }
   }
 
   override fun getAllVariables(experimentKey: String, promise: Promise) {
+    if (!Ascend.isAscendInitialised() || experimentKey.isEmpty()) {
+      Log.d(NAME, "getAllVariables failed: SDK not initialized or empty key")
+      promise.resolve("")
+      return
+    }
     try {
       val experimentPlugin = Ascend.getPlugin<DRSPlugin>(Plugins.EXPERIMENTS)
       val result = experimentPlugin.getExperimentService().getAllVariables(experimentKey)
       
-      val jsonString = result.toString()
+      val jsonString = result?.toString() ?: ""
       
       Log.d(NAME, "getAllVariables result: $jsonString")
       promise.resolve(jsonString)
     } catch (e: Exception) {
       Log.e(NAME, "Error in getAllVariables: ${e.message}", e)
-      promise.reject("ERROR", "Failed to get all variables: ${e.message}", e)
+      promise.resolve("")
     }
   }
 
   override fun initializeExperiments(promise: Promise) {
+    if (!Ascend.isAscendInitialised()) {
+      promise.resolve(false)
+      return
+    }
     try {
       val experimentPlugin = Ascend.getPlugin<DRSPlugin>(Plugins.EXPERIMENTS)
       Log.d(NAME, "Experiments plugin initialized successfully: $experimentPlugin")
@@ -302,12 +333,16 @@ class AscendReactNativeSdkModule(reactContext: ReactApplicationContext) :
   }
 
   override fun refreshExperiment(promise: Promise) {
+    if (!Ascend.isAscendInitialised()) {
+      promise.resolve(false)
+      return
+    }
     try {
       val experimentPlugin = Ascend.getPlugin<DRSPlugin>(Plugins.EXPERIMENTS)
       val callback = object : IExperimentCallback {
         override fun onFailure(throwable: Throwable) {
           Log.e(NAME, "refreshExperiment failed: ${throwable.message}", throwable)
-          promise.reject("ERROR", "Failed to refresh experiments: ${throwable.message}", throwable)
+          promise.resolve(false)
         }
         
         override fun onSuccess() {
@@ -324,6 +359,11 @@ class AscendReactNativeSdkModule(reactContext: ReactApplicationContext) :
   }
 
   override fun fetchExperiments(defaultValues: ReadableMap, promise: Promise) {
+    if (!Ascend.isAscendInitialised()) {
+      Log.d(NAME, "fetchExperiments failed: SDK not initialized")
+      promise.resolve(false)
+      return
+    }
     try {
       Log.d(NAME, "fetchExperiments called with defaultValues: $defaultValues")
       
@@ -397,6 +437,12 @@ class AscendReactNativeSdkModule(reactContext: ReactApplicationContext) :
       val experimentPlugin = Ascend.getPlugin<DRSPlugin>(Plugins.EXPERIMENTS)
       val res = experimentPlugin.getExperimentService().getExperimentVariants()
       
+      if (res == null || res.isEmpty()) {
+        Log.d(NAME, "getExperimentVariants: No experiments in storage")
+        promise.resolve("{}")
+        return
+      }
+      
       // Convert HashMap to JSON string using Gson
       val jsonString = com.google.gson.Gson().toJson(res)
       
@@ -405,7 +451,7 @@ class AscendReactNativeSdkModule(reactContext: ReactApplicationContext) :
     } catch (e: Exception) {
       Log.e(NAME, "getExperimentVariants exception: ${e.message}", e)
       e.printStackTrace()
-      promise.reject("ERROR", "Failed to get experiment variants: ${e.message}", e)
+      promise.resolve("{}")
     }
   }
 

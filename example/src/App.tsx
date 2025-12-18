@@ -22,6 +22,7 @@ export default function App() {
   // For physical iOS devices, replace 'localhost' with your Mac's IP address
   // Find your IP: System Settings > Network, or run `ipconfig getifaddr en0` in terminal
   const API_PORT = '8100';
+  const Experiment_Key = 'common_test';
   const getApiBaseUrl = () => {
     if (Platform.OS === 'android') {
       return `http://10.0.2.2:${API_PORT}`;
@@ -46,13 +47,13 @@ export default function App() {
               apiBaseUrl,
               apiEndpoint: '/v1/allocations/',
               headers: {
-                'x-experiment-keys': 'common_test',
+                'x-experiment-keys': Experiment_Key,
               },
             },
             shouldFetchOnInit: true,
             shouldRefreshDRSOnForeground: false,
             defaultValues: {
-              common_test: {
+              [Experiment_Key]: {
                 color: 'blue',
                 prime: true,
                 boolean: false,
@@ -69,124 +70,74 @@ export default function App() {
       },
     };
 
-    try {
-      const response = await Ascend.init(config);
-      setStatus(
-        response.success ? 'Initialized ✅' : `Error: ${response.error}`
-      );
-      setResult(JSON.stringify(response, null, 2));
-    } catch (error) {
-      setStatus(`Error: ${error}`);
-      setResult(`Error: ${error}`);
-    }
+    const response = await Ascend.init(config);
+    setStatus(response.success ? 'Initialized ✅' : `Error: ${response.error}`);
+    setResult(JSON.stringify(response, null, 2));
   };
 
   const handleFetchExperiments = async () => {
-    if (!(await Ascend.isInitialized())) {
-      setResult('SDK not initialized');
-      return;
-    }
-    try {
-      console.log('[App] Fetching experiments...');
-      const defaultValues = {
-        common_test: {
-          color: 'blue',
-          boolean: false,
-          prime: true,
-          number: 0,
-        },
-      };
-      const success = await Experiments.fetchExperiments(defaultValues);
-      console.log('[App] fetchExperiments result:', success);
-      setResult(
-        success
-          ? 'Experiments fetched successfully'
-          : 'Failed to fetch experiments'
-      );
-    } catch (error) {
-      console.error('[App] Error fetching experiments:', error);
-      setResult(`Error: ${error}`);
-    }
+    const defaultValues = {
+      [Experiment_Key]: {
+        color: 'blue',
+        boolean: false,
+        prime: true,
+        number: 0,
+      },
+    };
+    const success = await Experiments.fetchExperiments(defaultValues);
+    setResult(
+      success
+        ? 'Experiments fetched successfully'
+        : 'Failed to fetch experiments'
+    );
   };
 
   const handleRefresh = async () => {
-    if (!(await Ascend.isInitialized())) {
-      setResult('SDK not initialized');
-      return;
-    }
-    try {
-      const success = await Experiments.refreshExperiment();
-      setResult(
-        success
-          ? 'Experiments refreshed successfully'
-          : 'Failed to refresh experiments'
-      );
-    } catch (error) {
-      setResult(`Error: ${error}`);
-    }
+    const success = await Experiments.refreshExperiment();
+    setResult(
+      success
+        ? 'Experiments refreshed successfully'
+        : 'Failed to refresh experiments'
+    );
   };
 
   const handleGetFlag = async (
     type: 'boolean' | 'number' | 'string',
     variable: string
   ) => {
-    if (!(await Ascend.isInitialized())) {
-      setResult('SDK not initialized');
-      return;
+    let value: any;
+    switch (type) {
+      case 'boolean':
+        value = await Experiments.getBooleanFlag(
+          Experiment_Key,
+          variable,
+          false,
+          false
+        );
+        break;
+      case 'number':
+        value = await Experiments.getNumberFlag(
+          Experiment_Key,
+          variable,
+          false,
+          false
+        );
+        break;
+      case 'string':
+        value = await Experiments.getStringFlag(
+          Experiment_Key,
+          variable,
+          false,
+          false
+        );
+        break;
     }
-    try {
-      console.log(`[App] Getting ${type} flag for: ${variable}`);
-      let value: any;
-      switch (type) {
-        case 'boolean':
-          value = await Experiments.getBooleanFlag(
-            'common_test',
-            variable,
-            false,
-            false
-          );
-          console.log(`[App] getBooleanFlag result:`, value);
-          break;
-        case 'number':
-          value = await Experiments.getNumberFlag(
-            'common_test',
-            variable,
-            false,
-            false
-          );
-          console.log(`[App] getNumberFlag result:`, value);
-          break;
-        case 'string':
-          value = await Experiments.getStringFlag(
-            'common_test',
-            variable,
-            false,
-            false
-          );
-          console.log(`[App] getStringFlag result:`, value);
-          break;
-      }
-      setResult(`${variable}: ${JSON.stringify(value)}`);
-    } catch (error) {
-      console.error(`[App] Error getting ${type} flag:`, error);
-      setResult(`Error: ${error}`);
-    }
+    setResult(`${variable}: ${JSON.stringify(value)}`);
   };
 
   const handleGetAllVariables = async () => {
-    if (!(await Ascend.isInitialized())) {
-      setResult('SDK not initialized');
-      return;
-    }
-    try {
-      console.log('[App] Getting all variables for: common_test');
-      const variables = await Experiments.getAllVariables('common_test');
-      console.log('[App] getAllVariables result:', variables);
-      setResult(JSON.stringify(variables, null, 2) || 'No variables found');
-    } catch (error) {
-      console.error('[App] Error getting all variables:', error);
-      setResult(`Error: ${error}`);
-    }
+    const variables = await Experiments.getAllVariables(Experiment_Key);
+    setResult(JSON.stringify(variables, null, 2));
   };
 
   const handleGetUserId = async () => {
@@ -199,66 +150,31 @@ export default function App() {
   };
 
   const handleGetExperimentVariants = async () => {
-    if (!(await Ascend.isInitialized())) {
-      setResult('SDK not initialized');
-      return;
-    }
-    try {
-      console.log('[App] Getting experiment variants');
-      const variants = await Experiments.getExperimentVariants();
-      console.log('[App] getExperimentVariants result:', variants);
-      setResult(JSON.stringify(variants, null, 2) || 'No variants found');
-    } catch (error) {
-      console.error('[App] Error getting experiment variants:', error);
-      setResult(`Error: ${error}`);
-    }
+    const variants = await Experiments.getExperimentVariants();
+    setResult(JSON.stringify(variants, null, 2));
   };
 
   const handleIsInitialized = async () => {
-    try {
-      const isInit = await Ascend.isInitialized();
-      setResult(`SDK Initialized: ${isInit ? 'Yes ✅' : 'No ❌'}`);
-    } catch (error) {
-      setResult(`Error: ${error}`);
-    }
+    const isInit = await Ascend.isInitialized();
+    setResult(`SDK Initialized: ${isInit ? 'Yes ✅' : 'No ❌'}`);
   };
 
   const handleInitializeExperiments = async () => {
-    if (!(await Ascend.isInitialized())) {
-      setResult('SDK not initialized');
-      return;
-    }
-    try {
-      const success = await Experiments.initializeExperiments();
-      setResult(
-        success
-          ? 'Experiments initialized successfully ✅'
-          : 'Failed to initialize experiments ❌'
-      );
-    } catch (error) {
-      setResult(`Error: ${error}`);
-    }
+    const success = await Experiments.initializeExperiments();
+    setResult(
+      success
+        ? 'Experiments initialized successfully ✅'
+        : 'Failed to initialize experiments ❌'
+    );
   };
 
   const handleSetUser = async () => {
-    if (!(await Ascend.isInitialized())) {
-      setResult('SDK not initialized');
-      return;
-    }
-    if (!userIdInput.trim()) {
-      setResult('Please enter a user ID');
-      return;
-    }
-    try {
-      const success = await Ascend.setUser(userIdInput.trim());
-      setResult(
-        success
-          ? `User set successfully: ${userIdInput.trim()} ✅`
-          : 'Failed to set user ❌'
-      );
-    } catch (error) {
-      setResult(`Error: ${error}`);
-    }
+    const success = await Ascend.setUser(userIdInput.trim());
+    setResult(
+      success
+        ? `User set successfully: ${userIdInput.trim()} ✅`
+        : 'Failed to set user ❌'
+    );
   };
 
   return (
