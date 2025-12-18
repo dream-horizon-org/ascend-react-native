@@ -23,7 +23,7 @@ target 'AscendReactNativeSdkExample' do
   
   # Handle autolinking with fallback for when CLI can't detect project
   begin
-    config = use_native_modules!
+  config = use_native_modules!
   rescue => e
     Pod::UI.puts "Note: use_native_modules! failed (#{e.message}), using manual configuration"
     config = nil

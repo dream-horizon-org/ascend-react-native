@@ -260,33 +260,31 @@ import Ascend
     }
     
     @objc public static func getExperimentVariants(completion: @escaping (String) -> Void) {
-        guard let experiments = try? getExperimentsPlugin() else {
+        guard let experimentsPlugin = try? getExperimentsPlugin() else {
             print("[AscendReactNativeSdk] getExperimentVariants failed: Could not get experiments plugin")
             completion("{}")
             return
         }
         
-        let variants = experiments.getExperimentVariants()
-        
-        print("[AscendReactNativeSdk] getExperimentVariants - found \(variants.count) variants:")
-        for (experimentKey, variant) in variants {
-            print("  - \(experimentKey): experimentId=\(variant.experimentId), variantName=\(variant.variantName)")
+        // Use getExperimentsFromStorage() to get full Experiment objects (matches Android behavior)
+        guard let experiments = experimentsPlugin.getExperimentsFromStorage() else {
+            print("[AscendReactNativeSdk] getExperimentVariants: No experiments in storage")
+            completion("{}")
+            return
         }
         
-        var variantsDict: [String: [String: String]] = [:]
-        for (experimentKey, variant) in variants {
-            variantsDict[experimentKey] = [
-                "experimentId": variant.experimentId,
-                "variantName": variant.variantName
-            ]
-        }
+        print("[AscendReactNativeSdk] getExperimentVariants - found \(experiments.count) experiments")
+        
+        // Encode full Experiment objects to JSON (same as Android using Gson)
         do {
-            let jsonData = try JSONSerialization.data(withJSONObject: variantsDict, options: [])
-            let jsonString = String(data: jsonData, encoding: .utf8) ?? "{}"
+            let encoder = JSONEncoder()
+            encoder.keyEncodingStrategy = .convertToSnakeCase
+            let data = try encoder.encode(experiments)
+            let jsonString = String(data: data, encoding: .utf8) ?? "{}"
             print("[AscendReactNativeSdk] getExperimentVariants result: \(jsonString)")
             completion(jsonString)
         } catch {
-            print("[AscendReactNativeSdk] getExperimentVariants JSON serialization error: \(error)")
+            print("[AscendReactNativeSdk] getExperimentVariants encoding error: \(error)")
             completion("{}")
         }
     }
