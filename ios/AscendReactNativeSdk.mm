@@ -2,7 +2,6 @@
 #import "AscendReactNativeSdk-Swift.h"
 #import <React/RCTUtils.h>
 #import <React/RCTBridgeModule.h>
-// Import the generated spec header from React Native codegen
 #import <ReactCodegen/AscendReactNativeSdk/AscendReactNativeSdk.h>
 
 @implementation AscendReactNativeSdk

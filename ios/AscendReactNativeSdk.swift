@@ -3,7 +3,7 @@ import Ascend
 
 @objc public class AscendReactNativeSdkSwift: NSObject {
     
-  @objc public static func `init`(_ configDict: NSDictionary, completion: @escaping (NSDictionary) -> Void) {
+    @objc public static func `init`(_ configDict: NSDictionary, completion: @escaping (NSDictionary) -> Void) {
         do {
             guard let configDict = configDict as? [String: Any] else {
                 completion(NSDictionary(dictionary: [
@@ -81,18 +81,15 @@ import Ascend
                     if pluginName.uppercased() == "EXPERIMENTS" {
                         let pluginConfigDict = pluginDict["config"] as? [String: Any] ?? [:]
                         
-                        // Check for httpConfig nested object first, then fall back to direct apiBaseUrl
                         var experimentsApiBaseUrl = httpConfig.apiBaseUrl
                         var experimentsApiEndpoint = "/v1/users/experiments"
                         var experimentsHeaders: [String: String] = [:]
                         
                         if let pluginHttpConfig = pluginConfigDict["httpConfig"] as? [String: Any] {
-                            // Plugin has nested httpConfig
                             experimentsApiBaseUrl = (pluginHttpConfig["apiBaseUrl"] as? String) ?? experimentsApiBaseUrl
                             experimentsApiEndpoint = (pluginHttpConfig["apiEndpoint"] as? String) ?? experimentsApiEndpoint
                             experimentsHeaders = extractHeaders(from: pluginHttpConfig["headers"])
                         } else {
-                            // Fallback to direct properties
                             experimentsApiBaseUrl = (pluginConfigDict["apiBaseUrl"] as? String) ?? experimentsApiBaseUrl
                             experimentsApiEndpoint = (pluginConfigDict["apiEndpoint"] as? String) ?? experimentsApiEndpoint
                             experimentsHeaders = extractHeaders(from: pluginConfigDict["headers"])
@@ -204,21 +201,18 @@ import Ascend
             return
         }
         
-        // Try getDoubleValue first
         let doubleResult = experiments.getDoubleValue(for: experimentKey, with: variable, dontCache: dontCache, ignoreCache: ignoreCache)
         if doubleResult != -1.0 {
             completion(doubleResult)
             return
         }
         
-        // Try int and convert to double
         let intResult = experiments.getIntValue(for: experimentKey, with: variable, dontCache: dontCache, ignoreCache: ignoreCache)
         if intResult != -1 {
             completion(Double(intResult))
             return
         }
         
-        // Try long and convert to double
         let longResult = experiments.getLongValue(for: experimentKey, with: variable, dontCache: dontCache, ignoreCache: ignoreCache)
         completion(Double(longResult))
     }
@@ -266,7 +260,6 @@ import Ascend
             return
         }
         
-        // Use getExperimentsFromStorage() to get full Experiment objects (matches Android behavior)
         guard let experiments = experimentsPlugin.getExperimentsFromStorage() else {
             print("[AscendReactNativeSdk] getExperimentVariants: No experiments in storage")
             completion("{}")
@@ -275,7 +268,6 @@ import Ascend
         
         print("[AscendReactNativeSdk] getExperimentVariants - found \(experiments.count) experiments")
         
-        // Encode full Experiment objects to JSON (same as Android using Gson)
         do {
             let encoder = JSONEncoder()
             encoder.keyEncodingStrategy = .convertToSnakeCase

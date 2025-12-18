@@ -75,7 +75,6 @@ class AscendReactNativeSdkModule(reactContext: ReactApplicationContext) :
         }
       }
       
-
       val httpConfig = HttpConfig(
         headers = headersMap,
         apiBaseUrl = apiBaseUrl,
@@ -91,7 +90,6 @@ class AscendReactNativeSdkModule(reactContext: ReactApplicationContext) :
         )
       )
 
-
       val clientConfigMap = config.getMap("clientConfig")
       val apiKey = clientConfigMap?.getString("apiKey") ?: ""
       val userId = clientConfigMap?.getString("userId") ?: ""
@@ -106,7 +104,6 @@ class AscendReactNativeSdkModule(reactContext: ReactApplicationContext) :
           
           Log.d(NAME, "Processing Plugin $i - name: $pluginName")
           
-
           if (pluginName == "EXPERIMENTS") {
             val pluginConfigMap = pluginMap.getMap("config")
             val shouldFetchOnInit = pluginConfigMap?.getBoolean("shouldFetchOnInit") ?: false
@@ -176,7 +173,6 @@ class AscendReactNativeSdkModule(reactContext: ReactApplicationContext) :
         }
       }
 
-
       val ascendConfig = AscendConfig(
         httpConfig,
         plugins = pluginConfigs,
@@ -226,6 +222,7 @@ class AscendReactNativeSdkModule(reactContext: ReactApplicationContext) :
       promise.reject("ERROR", "Failed to set user: ${e.message}", e)
     }
   }
+  
   override fun getUserId(promise: Promise) {
     if (!Ascend.isAscendInitialised()) {
       promise.resolve("")
@@ -281,7 +278,7 @@ class AscendReactNativeSdkModule(reactContext: ReactApplicationContext) :
 
   override fun getNumberFlag(experimentKey: String, variable: String, dontCache: Boolean, ignoreCache: Boolean, promise: Promise) {
     if (!Ascend.isAscendInitialised() || experimentKey.isEmpty() || variable.isEmpty()) {
-      promise.resolve(0.0)
+      promise.resolve(-1)
       return
     }
     try {
@@ -292,7 +289,7 @@ class AscendReactNativeSdkModule(reactContext: ReactApplicationContext) :
       promise.resolve(result)
     } catch (e: Exception) {
       Log.e(NAME, "Error in getNumberFlag: ${e.message}", e)
-      promise.resolve(0.0)
+      promise.resolve(-1)
     }
   }
 
@@ -370,49 +367,44 @@ class AscendReactNativeSdkModule(reactContext: ReactApplicationContext) :
       val experimentPlugin = Ascend.getPlugin<DRSPlugin>(Plugins.EXPERIMENTS)
       
       val defaultMap = HashMap<String, JsonObject?>()
-        val iterator = defaultValues.keySetIterator()
-        while (iterator.hasNextKey()) {
-          val key = iterator.nextKey()
+      val iterator = defaultValues.keySetIterator()
+      while (iterator.hasNextKey()) {
+        val key = iterator.nextKey()
+        
+        val valueMap = defaultValues.getMap(key)
+        
+        if (valueMap != null) {
+          val jsonObject = JsonObject()
+          val valueIterator = valueMap.keySetIterator()
           
-          val valueMap = defaultValues.getMap(key)
-          
-          if (valueMap != null) {
-            val jsonObject = JsonObject()
-            val valueIterator = valueMap.keySetIterator()
+          while (valueIterator.hasNextKey()) {
+            val valueKey = valueIterator.nextKey()
+            val valueType = valueMap.getType(valueKey)
             
-            while (valueIterator.hasNextKey()) {
-              val valueKey = valueIterator.nextKey()
-              val valueType = valueMap.getType(valueKey)
-              
-              
-              when (valueType) {
-                com.facebook.react.bridge.ReadableType.Boolean -> {
-                  val boolValue = valueMap.getBoolean(valueKey)
-                  jsonObject.addProperty(valueKey, boolValue)
-
-                }
-                com.facebook.react.bridge.ReadableType.Number -> {
-                  val numValue = valueMap.getDouble(valueKey)
-                  jsonObject.addProperty(valueKey, numValue)
-
-                }
-                com.facebook.react.bridge.ReadableType.String -> {
-                  val strValue = valueMap.getString(valueKey)
-                  jsonObject.addProperty(valueKey, strValue)
-
-                }
-                else -> {
-                  Log.w(NAME, "    Unsupported type for $valueKey: $valueType")
-                }
+            when (valueType) {
+              com.facebook.react.bridge.ReadableType.Boolean -> {
+                val boolValue = valueMap.getBoolean(valueKey)
+                jsonObject.addProperty(valueKey, boolValue)
+              }
+              com.facebook.react.bridge.ReadableType.Number -> {
+                val numValue = valueMap.getDouble(valueKey)
+                jsonObject.addProperty(valueKey, numValue)
+              }
+              com.facebook.react.bridge.ReadableType.String -> {
+                val strValue = valueMap.getString(valueKey)
+                jsonObject.addProperty(valueKey, strValue)
+              }
+              else -> {
+                Log.w(NAME, "    Unsupported type for $valueKey: $valueType")
               }
             }
-            
-            defaultMap[key] = jsonObject
-            Log.d(NAME, "Final JsonObject for experiment '$key': $jsonObject")
           }
+          
+          defaultMap[key] = jsonObject
+          Log.d(NAME, "Final JsonObject for experiment '$key': $jsonObject")
         }
+      }
       
-
       val callback = object : IExperimentCallback {
         override fun onFailure(throwable: Throwable) {
           Log.e(NAME, "fetchExperiments failed: ${throwable.message}", throwable)
@@ -443,7 +435,6 @@ class AscendReactNativeSdkModule(reactContext: ReactApplicationContext) :
         return
       }
       
-      // Convert HashMap to JSON string using Gson
       val jsonString = com.google.gson.Gson().toJson(res)
       
       Log.d(NAME, "getExperimentVariants result: $jsonString")
