@@ -13,6 +13,10 @@ runs:
       run: corepack enable
       shell: bash
 
+    - name: Set Yarn version to match package.json
+      run: corepack prepare yarn@3.6.1 --activate
+      shell: bash
+
     - name: Restore dependencies
       id: yarn-cache
       uses: actions/cache/restore@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
