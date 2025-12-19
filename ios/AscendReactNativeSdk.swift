@@ -38,10 +38,15 @@ import Ascend
             
             var httpConfig: HTTPConfig
             if let httpConfigDict = configDict["httpConfig"] as? [String: Any] {
-                let apiBaseUrl = (httpConfigDict["apiBaseUrl"] as? String) ?? "https://api.ascend.com"
+                let apiBaseUrl = (httpConfigDict["apiBaseUrl"] as? String) ?? "https://localhost:8100"
                 let shouldRetry = (httpConfigDict["shouldRetry"] as? NSNumber)?.boolValue ?? true
                 
-                let defaultHeaders = extractHeaders(from: httpConfigDict["headers"])
+                var defaultHeaders = extractHeaders(from: httpConfigDict["headers"])
+                
+                // Add API key to headers if available
+                if !apiKey.isEmpty {
+                    defaultHeaders["api-key"] = apiKey
+                }
                 
                 var timeout: TimeInterval = 30.0
                 if let timeoutConfigDict = httpConfigDict["timeoutConfig"] as? [String: Any],
@@ -60,6 +65,8 @@ import Ascend
                         retryDelay = delayTime.doubleValue / 1000.0
                     }
                 }
+                
+                print("[AscendReactNativeSdk] HTTPConfig headers: \(defaultHeaders)")
                 
                 httpConfig = HTTPConfig(
                     apiBaseUrl: apiBaseUrl,
@@ -95,6 +102,11 @@ import Ascend
                             experimentsHeaders = extractHeaders(from: pluginConfigDict["headers"])
                         }
                         
+                        // Add API key to experiments headers if not already present
+                        if !apiKey.isEmpty && experimentsHeaders["api-key"] == nil {
+                            experimentsHeaders["api-key"] = apiKey
+                        }
+                        
                         let shouldFetchOnInit = (pluginConfigDict["shouldFetchOnInit"] as? NSNumber)?.boolValue ?? true
                         let shouldRefreshOnForeground = (pluginConfigDict["shouldRefreshDRSOnForeground"] as? NSNumber)?.boolValue ?? 
                                                          (pluginConfigDict["shouldRefreshOnForeground"] as? NSNumber)?.boolValue ?? true
@@ -107,10 +119,23 @@ import Ascend
                         print("  - apiEndpoint: \(experimentsApiEndpoint)")
                         print("  - shouldFetchOnInit: \(shouldFetchOnInit)")
                         print("  - enableDebugLogging: \(enableDebugLogging)")
+                        print("  - headers (with API key): \(experimentsHeaders)")
                         
                         var defaultValues: [String: ExperimentVariable] = [:]
                         if let defaultValuesDict = pluginConfigDict["defaultValues"] as? [String: Any] {
-                            defaultValues = defaultValuesDict.compactMapValues { convertToExperimentVariable($0) }
+                            print("[AscendReactNativeSdk] Processing defaultValues: \(defaultValuesDict)")
+                            for (experimentKey, value) in defaultValuesDict {
+                                if let valueDict = value as? [String: Any] {
+                                    var expVarDict: [String: ExperimentVariable] = [:]
+                                    for (varKey, varValue) in valueDict {
+                                        if let expVar = convertToExperimentVariable(varValue) {
+                                            expVarDict[varKey] = expVar
+                                        }
+                                    }
+                                    defaultValues[experimentKey] = ExperimentVariable.dictionary(expVarDict)
+                                    print("[AscendReactNativeSdk]   - \(experimentKey): \(expVarDict.keys.joined(separator: ", "))")
+                                }
+                            }
                         }
                         
                         let experimentsConfig = AscendExperimentsConfiguration(
@@ -120,7 +145,7 @@ import Ascend
                             defaultValues: defaultValues,
                             apiBaseUrl: experimentsApiBaseUrl,
                             apiEndpoint: experimentsApiEndpoint,
-                            headers: experimentsHeaders.isEmpty ? nil : experimentsHeaders,
+                            headers: experimentsHeaders,
                             enableCaching: enableCaching,
                             enableDebugLogging: enableDebugLogging
                         )
@@ -137,8 +162,12 @@ import Ascend
             
             try Ascend.initialize(with: ascendConfig)
             
+            // Only set userId if provided and not empty
             if let userId = clientConfigDict["userId"] as? String, !userId.isEmpty {
+                print("[AscendReactNativeSdk] Setting userId: '\(userId)'")
                 Ascend.user.setUser(userId: userId)
+            } else {
+                print("[AscendReactNativeSdk] No userId provided, skipping setUser")
             }
             
             completion(NSDictionary(dictionary: [
@@ -260,18 +289,21 @@ import Ascend
             return
         }
         
-        guard let experiments = experimentsPlugin.getExperimentsFromStorage() else {
-            print("[AscendReactNativeSdk] getExperimentVariants: No experiments in storage")
+        // Use getExperimentVariants() which returns [String: ExperimentVariant]
+        let variants = experimentsPlugin.getExperimentVariants()
+        
+        if variants.isEmpty {
+            print("[AscendReactNativeSdk] getExperimentVariants: No variants found")
             completion("{}")
             return
         }
         
-        print("[AscendReactNativeSdk] getExperimentVariants - found \(experiments.count) experiments")
+        print("[AscendReactNativeSdk] getExperimentVariants - found \(variants.count) variants")
         
         do {
             let encoder = JSONEncoder()
             encoder.keyEncodingStrategy = .convertToSnakeCase
-            let data = try encoder.encode(experiments)
+            let data = try encoder.encode(variants)
             let jsonString = String(data: data, encoding: .utf8) ?? "{}"
             print("[AscendReactNativeSdk] getExperimentVariants result: \(jsonString)")
             completion(jsonString)
@@ -334,10 +366,28 @@ import Ascend
         }
         
         print("[AscendReactNativeSdk] fetchExperiments called with keys: \(experimentKeys)")
+        print("[AscendReactNativeSdk] fetchExperiments defaultValues: \(defaultValuesDict)")
         
         do {
             let experiments = try getExperimentsPlugin()
-            let experimentKeysDict = Dictionary(uniqueKeysWithValues: experimentKeys.map { ($0, ExperimentVariable.dictionary([:])) })
+            
+            // Convert the default values to ExperimentVariable dictionaries
+            var experimentKeysDict: [String: ExperimentVariable] = [:]
+            for (key, value) in defaultValuesDict {
+                if let valueDict = value as? [String: Any] {
+                    var expVarDict: [String: ExperimentVariable] = [:]
+                    for (varKey, varValue) in valueDict {
+                        if let expVar = convertToExperimentVariable(varValue) {
+                            expVarDict[varKey] = expVar
+                        }
+                    }
+                    experimentKeysDict[key] = ExperimentVariable.dictionary(expVarDict)
+                } else {
+                    experimentKeysDict[key] = ExperimentVariable.dictionary([:])
+                }
+            }
+            
+            print("[AscendReactNativeSdk] fetchExperiments converted dict keys: \(experimentKeysDict.keys.joined(separator: ", "))")
             
             experiments.fetchExperiments(for: experimentKeysDict) { response, error in
                 if let error = error {

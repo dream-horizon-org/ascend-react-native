@@ -18,7 +18,7 @@ end
 
 target 'AscendReactNativeSdkExample' do
   # Ascend iOS SDK dependency (required by AscendReactNativeSdk)
-  # Using git repository from dream-horizon-org
+  # Using git repository from dream-horizon-org - main branch
   pod 'Ascend', :git => 'https://github.com/dream-horizon-org/ascend-ios.git', :branch => 'main'
   
   # Handle autolinking with fallback for when CLI can't detect project
