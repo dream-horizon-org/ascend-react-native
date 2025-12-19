@@ -1733,6 +1733,27 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@dreamhorizonorg/ascend-rn-sdk-example@workspace:example":
+  version: 0.0.0-use.local
+  resolution: "@dreamhorizonorg/ascend-rn-sdk-example@workspace:example"
+  dependencies:
+    "@babel/core": ^7.25.2
+    "@babel/preset-env": ^7.25.3
+    "@babel/runtime": ^7.25.0
+    "@react-native-community/cli": 20.0.0
+    "@react-native-community/cli-platform-android": 20.0.0
+    "@react-native-community/cli-platform-ios": 20.0.0
+    "@react-native/babel-preset": 0.81.1
+    "@react-native/metro-config": 0.81.1
+    "@react-native/typescript-config": 0.81.1
+    "@types/react": ^19.1.0
+    react: 19.1.0
+    react-native: 0.81.1
+    react-native-builder-bob: ^0.40.14
+    react-native-monorepo-config: ^0.1.9
+  languageName: unknown
+  linkType: soft
+
 "@dreamhorizonorg/ascend-rn-sdk@workspace:.":
   version: 0.0.0-use.local
   resolution: "@dreamhorizonorg/ascend-rn-sdk@workspace:."
@@ -10148,27 +10169,6 @@ __metadata:
   checksum: e20fe84c86ff172fc8d898251b7cc2c43645d108bf96d0b8edf39b98f9a2cae97b40520ee7ed8ee0085ccc94736c4886294456033304151c3f94978cec03df21
   languageName: node
   linkType: hard
-
-"react-native-ascend-react-native-sdk-example@workspace:example":
-  version: 0.0.0-use.local
-  resolution: "react-native-ascend-react-native-sdk-example@workspace:example"
-  dependencies:
-    "@babel/core": ^7.25.2
-    "@babel/preset-env": ^7.25.3
-    "@babel/runtime": ^7.25.0
-    "@react-native-community/cli": 20.0.0
-    "@react-native-community/cli-platform-android": 20.0.0
-    "@react-native-community/cli-platform-ios": 20.0.0
-    "@react-native/babel-preset": 0.81.1
-    "@react-native/metro-config": 0.81.1
-    "@react-native/typescript-config": 0.81.1
-    "@types/react": ^19.1.0
-    react: 19.1.0
-    react-native: 0.81.1
-    react-native-builder-bob: ^0.40.14
-    react-native-monorepo-config: ^0.1.9
-  languageName: unknown
-  linkType: soft
 
 "react-native-builder-bob@npm:^0.40.14":
   version: 0.40.17
