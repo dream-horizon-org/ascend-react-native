@@ -180,7 +180,14 @@ class AscendReactNativeSdkModule(reactContext: ReactApplicationContext) :
       )
 
       Ascend.init(ascendConfig, reactApplicationContext)
-      AscendUser.setUser(userId)
+      
+      // Only set userId if provided and not empty
+      if (userId.isNotEmpty()) {
+        Log.d(NAME, "Setting userId: '$userId'")
+        AscendUser.setUser(userId)
+      } else {
+        Log.d(NAME, "No userId provided, skipping setUser")
+      }
       
       val result = Arguments.createMap()
       result.putBoolean("success", true)

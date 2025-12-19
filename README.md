@@ -111,7 +111,7 @@ const color = await Experiments.getStringFlag(
   'experiment-key',
   'color',
   false, // dontCache
-  false  // ignoreCache
+  false // ignoreCache
 );
 
 // Get a boolean flag
@@ -137,7 +137,8 @@ interface MyExperiment {
   count: number;
 }
 
-const variables = await Experiments.getAllVariables<MyExperiment>('experiment-key');
+const variables =
+  await Experiments.getAllVariables<MyExperiment>('experiment-key');
 
 // Get all experiment variants
 const variants = await Experiments.getExperimentVariants();
@@ -213,33 +214,33 @@ Initialize the experiments plugin.
 
 ### AscendConfig
 
-| Property | Type | Required | Description |
-|----------|------|----------|-------------|
-| `httpConfig` | `HTTPConfig` | Yes | HTTP configuration for network requests |
-| `plugins` | `PluginConfig[]` | Yes | Array of plugin configurations |
-| `clientConfig` | `ClientConfig` | Yes | Client configuration |
+| Property       | Type             | Required | Description                             |
+| -------------- | ---------------- | -------- | --------------------------------------- |
+| `httpConfig`   | `HTTPConfig`     | Yes      | HTTP configuration for network requests |
+| `plugins`      | `PluginConfig[]` | Yes      | Array of plugin configurations          |
+| `clientConfig` | `ClientConfig`   | Yes      | Client configuration                    |
 
 ### HTTPConfig
 
-| Property | Type | Required | Description |
-|----------|------|----------|-------------|
-| `apiBaseUrl` | `string` | Yes | Base URL for API requests |
-| `headers` | `{ [key: string]: string }` | No | Default headers for all requests |
-| `shouldRetry` | `boolean` | No | Whether to retry failed requests |
-| `apiEndpoint` | `string` | No | API endpoint path |
-| `retrialConfig` | `RetrialConfig` | No | Retry configuration |
-| `timeoutConfig` | `TimeoutConfig` | No | Timeout configuration |
+| Property        | Type                        | Required | Description                      |
+| --------------- | --------------------------- | -------- | -------------------------------- |
+| `apiBaseUrl`    | `string`                    | Yes      | Base URL for API requests        |
+| `headers`       | `{ [key: string]: string }` | No       | Default headers for all requests |
+| `shouldRetry`   | `boolean`                   | No       | Whether to retry failed requests |
+| `apiEndpoint`   | `string`                    | No       | API endpoint path                |
+| `retrialConfig` | `RetrialConfig`             | No       | Retry configuration              |
+| `timeoutConfig` | `TimeoutConfig`             | No       | Timeout configuration            |
 
 ### ClientConfig
 
-| Property | Type | Required | Description |
-|----------|------|----------|-------------|
-| `apiKey` | `string` | Yes | API key for authentication |
-| `userId` | `string` | No | User ID to set during initialization |
-| `environment` | `string` | No | Environment: 'development', 'staging', or 'production' |
-| `enableDebugLogging` | `boolean` | No | Enable debug logging |
-| `enablePerformanceMonitoring` | `boolean` | No | Enable performance monitoring |
-| `enableCrashReporting` | `boolean` | No | Enable crash reporting |
+| Property                      | Type      | Required | Description                                            |
+| ----------------------------- | --------- | -------- | ------------------------------------------------------ |
+| `apiKey`                      | `string`  | Yes      | API key for authentication                             |
+| `userId`                      | `string`  | No       | User ID to set during initialization                   |
+| `environment`                 | `string`  | No       | Environment: 'development', 'staging', or 'production' |
+| `enableDebugLogging`          | `boolean` | No       | Enable debug logging                                   |
+| `enablePerformanceMonitoring` | `boolean` | No       | Enable performance monitoring                          |
+| `enableCrashReporting`        | `boolean` | No       | Enable crash reporting                                 |
 
 ## Example App
 
