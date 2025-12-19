@@ -12,7 +12,7 @@ import {
   Ascend,
   Experiments,
   type AscendConfig,
-} from 'react-native-ascend-react-native-sdk';
+} from '@dreamhorizonorg/ascend-rn-sdk';
 
 export default function App() {
   const [status, setStatus] = useState<string>('Not initialized');
