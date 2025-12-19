@@ -1,7 +1,0 @@
-# GitHub credentials for accessing private Maven repositories
-# Copy this file to github.properties and fill in your credentials
-# Do NOT commit github.properties to version control
-
-github.username=your_github_username
-github.token=your_github_personal_access_token
-

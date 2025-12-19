@@ -4,27 +4,25 @@ export interface Spec extends TurboModule {
   init(config: Object): Promise<import('./core/Ascend').InitResult>;
   setUser(userId: string): Promise<boolean>;
   getUserId(): Promise<string>;
-  setGuest(guestId: string): Promise<boolean>;
-  getGuestId(): Promise<string>;
   getStringFlag(
-    apiPath: string,
+    experimentKey: string,
     variable: string,
     dontCache: boolean,
     ignoreCache: boolean
   ): Promise<string>;
   getBooleanFlag(
-    apiPath: string,
+    experimentKey: string,
     variable: string,
     dontCache: boolean,
     ignoreCache: boolean
   ): Promise<boolean>;
   getNumberFlag(
-    apiPath: string,
+    experimentKey: string,
     variable: string,
     dontCache: boolean,
     ignoreCache: boolean
   ): Promise<number>;
-  getAllVariables(apiPath: string): Promise<string>;
+  getAllVariables(experimentKey: string): Promise<string>;
   getExperimentVariants(): Promise<string>;
   initializeExperiments(): Promise<boolean>;
   refreshExperiment(): Promise<boolean>;

@@ -67,29 +67,6 @@ android {
 repositories {
   mavenCentral()
   google()
-  
-  // Load GitHub credentials from github.properties
-  def githubProperties = new Properties()
-  def githubPropertiesFile = rootProject.file('../github.properties')
-  if (githubPropertiesFile.exists()) {
-    githubPropertiesFile.withInputStream { githubProperties.load(it) }
-  }
-  
-  def ascendMavenUrl = System.getenv("ASCEND_MAVEN_URL") ?: project.findProperty("ascendMavenUrl")
-  if (ascendMavenUrl) {
-    maven {
-      url ascendMavenUrl
-      def ascendMavenUser = githubProperties['github.username'] ?: System.getenv("GITHUB_USERNAME")
-      def ascendMavenPass = githubProperties['github.token'] ?: System.getenv("GITHUB_TOKEN")
-      if (ascendMavenUser && ascendMavenPass) {
-        credentials {
-          username ascendMavenUser
-          password ascendMavenPass
-        }
-      }
-    }
-  }
-  //Changes for private maven package
 }
 
 def kotlin_version = getExtOrDefault("kotlinVersion")
@@ -97,5 +74,5 @@ def kotlin_version = getExtOrDefault("kotlinVersion")
 dependencies {
   implementation "com.facebook.react:react-android"
   implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-  implementation 'com.dream.sports:ascend-android:1.0.8-staging'
+  implementation "org.dreamhorizon:ascend-android-sdk:1.0.0"
 }

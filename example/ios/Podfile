@@ -18,13 +18,21 @@ end
 
 target 'AscendReactNativeSdkExample' do
   # Ascend iOS SDK dependency (required by AscendReactNativeSdk)
-  # Using git repository with tag v1.4.0
-  pod 'Ascend', :git => 'https://github.com/dream11/ascend-ios.git', :tag => 'v1.4.0'
+  # Using git repository from dream-horizon-org - main branch
+  pod 'Ascend', :git => 'https://github.com/dream-horizon-org/ascend-ios.git', :branch => 'main'
   
+  # Handle autolinking with fallback for when CLI can't detect project
+  begin
   config = use_native_modules!
+  rescue => e
+    Pod::UI.puts "Note: use_native_modules! failed (#{e.message}), using manual configuration"
+    config = nil
+  end
+  
+  react_native_path = config && config[:reactNativePath] ? config[:reactNativePath] : '../../node_modules/react-native'
 
   use_react_native!(
-    :path => config[:reactNativePath],
+    :path => react_native_path,
     # An absolute path to your application root.
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
@@ -33,7 +41,7 @@ target 'AscendReactNativeSdkExample' do
     # https://github.com/facebook/react-native/blob/main/packages/react-native/scripts/react_native_pods.rb#L197-L202
     react_native_post_install(
       installer,
-      config[:reactNativePath],
+      react_native_path,
       :mac_catalyst_enabled => false,
       # :ccache_enabled => true
     )

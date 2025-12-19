@@ -1,39 +1,47 @@
 import AscendReactNativeSdk from '../NativeAscendReactNativeSdk';
 
 export interface RetrialDelayConfig {
-  time?: number; // Delay time in milliseconds
-  policy?: string; // Retry policy: 'LINEAR', 'EXPONENTIAL', etc.
+  time?: number;
+  policy?: string;
 }
 
 export interface RetrialConfig {
-  attempts?: number; // Number of retry attempts
-  delay?: RetrialDelayConfig; // Delay configuration
+  attempts: number;
+  delay?: RetrialDelayConfig;
 }
 
 export interface TimeoutConfig {
-  callTimeout?: number; // Request timeout in milliseconds
+  callTimeout: number;
 }
 
 export interface HTTPConfig {
-  headers?: { [key: string]: string }; // Default headers for all requests
-  shouldRetry?: boolean; // Whether to retry failed requests
-  apiBaseUrl?: string; // Base URL for API requests
-  retrialConfig?: RetrialConfig; // Retry configuration
-  timeoutConfig?: TimeoutConfig; // Timeout configuration
+  headers?: { [key: string]: string };
+  shouldRetry?: boolean;
+  apiBaseUrl: string;
+  apiEndpoint?: string;
+  retrialConfig?: RetrialConfig;
+  timeoutConfig?: TimeoutConfig;
 }
 
 export interface PluginConfig {
-  name: string; // Plugin name: 'EXPERIMENTS', etc.
-  config?: Object; // Plugin-specific configuration
+  name: string;
+  config: {
+    httpConfig: HTTPConfig;
+    shouldFetchOnInit?: boolean;
+    shouldRefreshDRSOnForeground?: boolean;
+    defaultValues: { [key: string]: any };
+    enableCaching?: boolean;
+    enableDebugLogging?: boolean;
+  };
 }
 
 export interface ClientConfig {
-  apiKey: string; // API key for authentication
-  userId?: string; // Optional user ID to set during initialization
-  environment?: string; // Environment: 'development' | 'staging' | 'production'
-  enableDebugLogging?: boolean; // Whether to enable debug logging
-  enablePerformanceMonitoring?: boolean; // Whether to enable performance monitoring
-  enableCrashReporting?: boolean; // Whether to enable crash reporting
+  apiKey: string;
+  userId?: string;
+  environment?: string;
+  enableDebugLogging?: boolean;
+  enablePerformanceMonitoring?: boolean;
+  enableCrashReporting?: boolean;
 }
 
 export interface InitResult {
@@ -43,8 +51,8 @@ export interface InitResult {
 }
 
 export interface AscendConfig {
-  httpConfig?: HTTPConfig;
-  plugins?: PluginConfig[];
+  httpConfig: HTTPConfig;
+  plugins: PluginConfig[];
   clientConfig: ClientConfig;
 }
 
@@ -60,12 +68,6 @@ const Ascend = {
   },
   getUserId: (): Promise<string> => {
     return AscendReactNativeSdk.getUserId();
-  },
-  setGuest: (guestId: string): Promise<boolean> => {
-    return AscendReactNativeSdk.setGuest(guestId);
-  },
-  getGuestId: (): Promise<string> => {
-    return AscendReactNativeSdk.getGuestId();
   },
 };
 
