@@ -14,13 +14,13 @@ A React Native wrapper for the Ascend SDK, providing experimentation and feature
 ## Installation
 
 ```bash
-npm install react-native-ascend-react-native-sdk
+npm install @dream-horizon-org/ascend-rn-sdk
 ```
 
 or
 
 ```bash
-yarn add react-native-ascend-react-native-sdk
+yarn add @dream-horizon-org/ascend-rn-sdk
 ```
 
 ### iOS Setup
@@ -40,7 +40,7 @@ No additional setup required. The package will be automatically linked.
 ### Initialize the SDK
 
 ```typescript
-import { Ascend } from 'react-native-ascend-react-native-sdk';
+import { Ascend } from '@dream-horizon-org/ascend-rn-sdk';
 
 const config = {
   httpConfig: {
@@ -89,7 +89,7 @@ if (result.success) {
 ### User Management
 
 ```typescript
-import { Ascend } from 'react-native-ascend-react-native-sdk';
+import { Ascend } from '@dream-horizon-org/ascend-rn-sdk';
 
 // Set user ID
 await Ascend.setUser('user-123');
@@ -104,7 +104,7 @@ const isInitialized = await Ascend.isInitialized();
 ### Experiments
 
 ```typescript
-import { Experiments } from 'react-native-ascend-react-native-sdk';
+import { Experiments } from '@dream-horizon-org/ascend-rn-sdk';
 
 // Get a string flag
 const color = await Experiments.getStringFlag(
@@ -244,11 +244,15 @@ Initialize the experiments plugin.
 
 ## Example App
 
-The repository includes an example app demonstrating all SDK features. To run it:
+The package includes a complete example app demonstrating all SDK features. After installing the package, you can find the example in `node_modules/@dream-horizon-org/ascend-rn-sdk/example/`.
+
+### Running the Example from Source
+
+If you've cloned the repository:
 
 ```bash
 # Install dependencies
-yarn
+yarn install
 
 # Run on iOS
 yarn example ios
@@ -256,6 +260,28 @@ yarn example ios
 # Run on Android
 yarn example android
 ```
+
+### Example Code
+
+The example app (`example/src/App.tsx`) demonstrates:
+
+- ✅ SDK initialization with configuration
+- ✅ User management (setUser, getUserId)
+- ✅ Fetching experiments with default values
+- ✅ Getting boolean, number, and string flags
+- ✅ Retrieving all variables for an experiment
+- ✅ Refreshing experiments from the server
+- ✅ Error handling and loading states
+
+**Key Features Shown:**
+
+- Initialization with API key and headers
+- Setting up experiments with default values
+- Real-time flag retrieval
+- Caching and cache control
+- Debug logging
+
+Check the `example/` directory in the package for the complete implementation.
 
 ## Contributing
 

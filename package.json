@@ -1,6 +1,10 @@
 {
-  "name": "react-native-ascend-react-native-sdk",
+  "name": "@dreamhorizonorg/ascend-rn-sdk",
   "version": "0.1.0",
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/",
+    "access": "public"
+  },
   "description": "ascend react native package",
   "main": "./lib/module/index.js",
   "types": "./lib/typescript/src/index.d.ts",
@@ -19,7 +23,16 @@
     "ios",
     "cpp",
     "*.podspec",
-    "react-native.config.js",
+    "example",
+    "!example/node_modules",
+    "!example/ios/build",
+    "!example/ios/Pods",
+    "!example/ios/Podfile.lock",
+    "!example/android/build",
+    "!example/android/app/build",
+    "!example/android/.gradle",
+    "!example/vendor",
+    "!example/.yarn",
     "!ios/build",
     "!android/build",
     "!android/gradle",
@@ -32,7 +45,7 @@
     "!**/.*"
   ],
   "scripts": {
-    "example": "yarn workspace react-native-ascend-react-native-sdk-example",
+    "example": "yarn --cwd example",
     "test": "jest",
     "typecheck": "tsc",
     "lint": "eslint \"**/*.{js,ts,tsx}\"",
@@ -49,14 +62,20 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/YOUR-ORG/ascend-react-native-sdk.git"
+    "url": "git+https://github.com/dream-horizon-org/ascend-rn-sdk.git"
   },
-  "author": "YOUR_NAME <your.email@example.com>",
+  "author": "Prakhar Dixit <prakhar.dixit@dream11.com>",
+  "contributors": [
+    "Prakhar Dixit <prakhar.dixit@dream11.com>",
+    "Taddi Satya Sai Shyam Sundar <shyamsundar.taddi@dream11.com>",
+    "Harsh Mishra <harsh.mishra@dream11.com>",
+    "Prabhjot Singh <prabhjot.singh@dream11.com>"
+  ],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/YOUR-ORG/ascend-react-native-sdk/issues"
+    "url": "https://github.com/dream-horizon-org/ascend-rn-sdk/issues"
   },
-  "homepage": "https://github.com/YOUR-ORG/ascend-react-native-sdk#readme",
+  "homepage": "https://github.com/dream-horizon-org/ascend-rn-sdk#readme",
   "devDependencies": {
     "@commitlint/config-conventional": "^19.8.1",
     "@eslint/compat": "^1.3.2",

@@ -1,0 +1,87 @@
+name: Publish npm package
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    name: Publish to npm
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          registry-url: 'https://registry.npmjs.org/'
+
+      - name: Extract version from Git tag (strip leading 'v' if exists)
+        id: version
+        run: |
+          TAG="${GITHUB_REF#refs/tags/}"
+          VERSION="${TAG#v}" # removes 'v' prefix if present
+          echo "RELEASE_VERSION=$VERSION" >> $GITHUB_ENV
+          echo "🔖 Release version: $VERSION"
+
+      - name: Validate version format
+        run: |
+          if [[ ! "$RELEASE_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9.]+)?$ ]]; then
+            echo "❌ Invalid version format: $RELEASE_VERSION"
+            echo "Expected format: X.Y.Z or X.Y.Z-beta.N"
+            exit 1
+          fi
+
+      - name: Check if version already exists on npm
+        run: |
+          PACKAGE_NAME=$(node -p "require('./package.json').name")
+          if npm view "$PACKAGE_NAME@$RELEASE_VERSION" version > /dev/null 2>&1; then
+            echo "❌ Version $RELEASE_VERSION already exists on npm."
+            exit 1
+          else
+            echo "✅ Version $RELEASE_VERSION is available"
+          fi
+
+      - name: Set package.json version (without git tag)
+        run: |
+          npm version --no-git-tag-version "$RELEASE_VERSION"
+
+      - name: Install dependencies
+        run: yarn install --immutable
+
+      - name: Clean old lib (if exists)
+        run: |
+          if [ -d lib ]; then 
+            echo "🧹 Cleaning old lib directory"
+            rm -rf lib
+          fi
+
+      - name: Build with bob
+        run: |
+          echo "🔨 Building package..."
+          yarn prepare
+
+      - name: Verify build output
+        run: |
+          if [ ! -d lib ]; then
+            echo "❌ Build failed: lib directory not found"
+            exit 1
+          fi
+          echo "✅ Build successful"
+          ls -la lib/
+
+      - name: Publish to npm
+        run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Success notification
+        if: success()
+        run: |
+          echo "🎉 Successfully published @dream-horizon-org/ascend-rn-sdk@$RELEASE_VERSION to npm"

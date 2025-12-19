@@ -1,97 +1,334 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# Ascend React Native SDK - Example App
 
-# Getting Started
+This example app demonstrates how to use the `@dream-horizon-org/ascend-rn-sdk` package in a React Native application.
 
-> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
+## 🎯 What's Demonstrated
 
-## Step 1: Start Metro
+This example showcases all the key features of the Ascend SDK:
 
-First, you will need to run **Metro**, the JavaScript build tool for React Native.
+### Core Features
 
-To start the Metro dev server, run the following command from the root of your React Native project:
+- ✅ **SDK Initialization** - Setting up the SDK with configuration
+- ✅ **User Management** - Setting and retrieving user IDs
+- ✅ **Experiment Fetching** - Fetching experiments with default values
+- ✅ **Feature Flags** - Getting boolean, number, and string flags
+- ✅ **Variable Retrieval** - Getting all variables for an experiment
+- ✅ **Experiment Refresh** - Refreshing experiments from the server
+- ✅ **Error Handling** - Proper error handling and user feedback
+- ✅ **Loading States** - Managing loading states during async operations
 
-```sh
-# Using npm
-npm start
+## 📁 Project Structure
 
-# OR using Yarn
-yarn start
+```
+example/
+├── src/
+│   └── App.tsx          # Main example implementation
+├── ios/                 # iOS native project
+│   ├── Podfile          # CocoaPods configuration
+│   └── ...
+├── android/             # Android native project
+│   └── ...
+├── package.json         # Dependencies
+└── README.md           # This file
 ```
 
-## Step 2: Build and run your app
+## 🚀 Running the Example
 
-With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
+### Prerequisites
 
-### Android
+- Node.js >= 20
+- Yarn 3.6.1
+- For iOS: Xcode 14+ and CocoaPods
+- For Android: Android Studio and JDK 17+
 
-```sh
-# Using npm
-npm run android
+### Setup
 
-# OR using Yarn
-yarn android
+1. **Install dependencies** (from the root of the repository):
+
+   ```bash
+   yarn install
+   ```
+
+2. **For iOS**, install pods:
+   ```bash
+   cd example/ios
+   pod install
+   cd ../..
+   ```
+
+### Running on iOS
+
+```bash
+yarn example ios
 ```
 
-### iOS
+Or from the example directory:
 
-For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
-
-The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
-
-```sh
-bundle install
-```
-
-Then, and every time you update your native dependencies, run:
-
-```sh
-bundle exec pod install
-```
-
-For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
-
-```sh
-# Using npm
-npm run ios
-
-# OR using Yarn
+```bash
+cd example
 yarn ios
 ```
 
-If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
+### Running on Android
 
-This is one way to run your app — you can also build it directly from Android Studio or Xcode.
+```bash
+yarn example android
+```
 
-## Step 3: Modify your app
+Or from the example directory:
 
-Now that you have successfully run the app, let's make changes!
+```bash
+cd example
+yarn android
+```
 
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
+## 🔧 Configuration
 
-When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
+The example app is configured to connect to a local API server. Update the configuration in `src/App.tsx`:
 
-- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
-- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
+```typescript
+const config: AscendConfig = {
+  httpConfig: {
+    apiBaseUrl: 'http://127.0.0.1:8100', // Change to your API URL
+  },
+  plugins: [
+    {
+      name: 'EXPERIMENTS',
+      config: {
+        httpConfig: {
+          apiBaseUrl: 'http://127.0.0.1:8100',
+          apiEndpoint: '/v1/allocations/',
+          headers: {
+            'x-experiment-keys': 'common_test', // Your experiment keys
+          },
+        },
+        defaultValues: {
+          common_test: {
+            color: 'blue',
+            boolean: false,
+            number: 0,
+            prime: 0,
+          },
+        },
+        shouldFetchOnInit: true,
+        enableDebugLogging: true,
+        enableCaching: true,
+      },
+    },
+  ],
+  clientConfig: {
+    apiKey: 'your-api-key-here', // Your API key
+    userId: '', // Optional: Set a user ID
+  },
+};
+```
 
-## Congratulations! :tada:
+## 📱 Features in the Example
 
-You've successfully run and modified your React Native App. :partying_face:
+### 1. Initialize SDK
 
-### Now what?
+Demonstrates how to initialize the Ascend SDK with proper configuration including:
 
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
+- API base URL
+- Experiment keys
+- Default values
+- Caching and debug logging
 
-# Troubleshooting
+### 2. User Management
 
-If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
+Shows how to:
 
-# Learn More
+- Set a user ID
+- Retrieve the current user ID
+- Check initialization status
 
-To learn more about React Native, take a look at the following resources:
+### 3. Fetch Experiments
 
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+Demonstrates fetching experiments with default values:
+
+```typescript
+await Experiments.fetchExperiments({
+  common_test: {
+    color: 'blue',
+    boolean: false,
+    number: 0,
+    prime: 0,
+  },
+});
+```
+
+### 4. Get Feature Flags
+
+Examples of retrieving different types of flags:
+
+```typescript
+// Boolean flag
+const boolValue = await Experiments.getBooleanFlag(
+  'common_test',
+  'boolean',
+  false,
+  false
+);
+
+// Number flag
+const numValue = await Experiments.getNumberFlag(
+  'common_test',
+  'number',
+  false,
+  false
+);
+
+// String flag
+const strValue = await Experiments.getStringFlag(
+  'common_test',
+  'color',
+  false,
+  false
+);
+```
+
+### 5. Get All Variables
+
+Shows how to retrieve all variables for an experiment:
+
+```typescript
+const allVars = await Experiments.getAllVariables('common_test');
+```
+
+### 6. Refresh Experiments
+
+Demonstrates refreshing experiment data from the server:
+
+```typescript
+await Experiments.refreshExperiment();
+```
+
+## 🎨 UI Components
+
+The example includes a clean, modern UI with:
+
+- Status indicators for SDK initialization
+- Interactive buttons for each feature
+- Real-time result display
+- Error handling with user-friendly messages
+- Loading states during async operations
+- Color-coded status badges
+
+## 🐛 Debugging
+
+### Enable Debug Logging
+
+Set `enableDebugLogging: true` in the experiments config to see detailed logs:
+
+```typescript
+config: {
+  enableDebugLogging: true,
+  // ... other config
+}
+```
+
+### iOS Logs
+
+```bash
+# View iOS logs
+npx react-native log-ios
+```
+
+### Android Logs
+
+```bash
+# View Android logs
+npx react-native log-android
+```
+
+## 📝 Code Snippets
+
+### Basic Initialization
+
+```typescript
+import { Ascend, Experiments } from '@dream-horizon-org/ascend-rn-sdk';
+
+const result = await Ascend.init(config);
+if (result.success) {
+  console.log('✅ SDK initialized');
+} else {
+  console.error('❌ Initialization failed:', result.error);
+}
+```
+
+### Setting User
+
+```typescript
+const success = await Ascend.setUser('user-123');
+if (success) {
+  const userId = await Ascend.getUserId();
+  console.log('Current user:', userId);
+}
+```
+
+### Getting Flags with Type Safety
+
+```typescript
+interface MyExperiment {
+  color: string;
+  boolean: boolean;
+  number: number;
+  prime: number;
+}
+
+const variables =
+  await Experiments.getAllVariables<MyExperiment>('common_test');
+console.log('Color:', variables.color);
+console.log('Enabled:', variables.boolean);
+```
+
+## 🔗 Related Documentation
+
+- [Main README](../README.md) - Package documentation
+- [API Reference](../README.md#api-reference) - Complete API documentation
+- [Publishing Guide](../PUBLISHING.md) - How to publish the package
+- [Contributing Guide](../CONTRIBUTING.md) - How to contribute
+
+## 💡 Tips
+
+1. **API Server**: Make sure your API server is running and accessible
+2. **Network Requests**: On iOS simulator, use `http://127.0.0.1` instead of `localhost`
+3. **Android Emulator**: Use `http://10.0.2.2` to access localhost from Android emulator
+4. **Caching**: Clear app data to reset cached experiments
+5. **Debug Mode**: Enable debug logging to troubleshoot issues
+
+## 🆘 Troubleshooting
+
+### iOS Build Issues
+
+```bash
+cd example/ios
+pod deintegrate
+pod install
+cd ../..
+yarn example ios
+```
+
+### Android Build Issues
+
+```bash
+cd example/android
+./gradlew clean
+cd ../..
+yarn example android
+```
+
+### Metro Bundler Issues
+
+```bash
+# Clear Metro cache
+yarn start --reset-cache
+```
+
+## 📄 License
+
+MIT
+
+---
+
+For more information, visit the [main repository](https://github.com/dream-horizon-org/ascend-rn-sdk).
