@@ -2,7 +2,7 @@
   "compilerOptions": {
     "rootDir": ".",
     "paths": {
-      "@dream-horizon-org/ascend-rn-sdk": ["./src/index"]
+      "@dreamhorizonorg/ascend-rn-sdk": ["./src/index"]
     },
     "allowUnreachableCode": false,
     "allowUnusedLabels": false,
