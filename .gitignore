@@ -77,7 +77,6 @@ android/keystores/debug.keystore
 !.yarn/versions
 .pnp.*
 example/.yarn/*
-yarn.lock
 # Expo
 .expo/
 
