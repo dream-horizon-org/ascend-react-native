@@ -1733,9 +1733,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@dreamhorizonorg/ascend-rn-sdk-example@workspace:example":
+"@dreamhorizonorg/ascend-react-native-example@workspace:example":
   version: 0.0.0-use.local
-  resolution: "@dreamhorizonorg/ascend-rn-sdk-example@workspace:example"
+  resolution: "@dreamhorizonorg/ascend-react-native-example@workspace:example"
   dependencies:
     "@babel/core": ^7.25.2
     "@babel/preset-env": ^7.25.3
@@ -1754,9 +1754,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@dreamhorizonorg/ascend-rn-sdk@workspace:.":
+"@dreamhorizonorg/ascend-react-native@workspace:.":
   version: 0.0.0-use.local
-  resolution: "@dreamhorizonorg/ascend-rn-sdk@workspace:."
+  resolution: "@dreamhorizonorg/ascend-react-native@workspace:."
   dependencies:
     "@commitlint/config-conventional": ^19.8.1
     "@eslint/compat": ^1.3.2
