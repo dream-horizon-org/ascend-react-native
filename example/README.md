@@ -1,6 +1,6 @@
 # Ascend React Native SDK - Example App
 
-This example app demonstrates how to use the `@dream-horizon-org/ascend-rn-sdk` package in a React Native application.
+This example app demonstrates how to use the `@dreamhorizonorg/ascend-react-native` package in a React Native application.
 
 ## 🎯 What's Demonstrated
 
@@ -246,7 +246,7 @@ npx react-native log-android
 ### Basic Initialization
 
 ```typescript
-import { Ascend, Experiments } from '@dream-horizon-org/ascend-rn-sdk';
+import { Ascend, Experiments } from '@dreamhorizonorg/ascend-react-native';
 
 const result = await Ascend.init(config);
 if (result.success) {
@@ -331,4 +331,4 @@ MIT
 
 ---
 
-For more information, visit the [main repository](https://github.com/dream-horizon-org/ascend-rn-sdk).
+For more information, visit the [main repository](https://github.com/dream-horizon-org/ascend-react-native).

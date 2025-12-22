@@ -89,4 +89,4 @@ jobs:
       - name: Success notification
         if: success()
         run: |
-          echo "🎉 Successfully published @dream-horizon-org/ascend-rn-sdk@$RELEASE_VERSION to npm"
+          echo "🎉 Successfully published @dreamhorizonorg/ascend-react-native@$RELEASE_VERSION to npm"
