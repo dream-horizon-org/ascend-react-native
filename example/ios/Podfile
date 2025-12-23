@@ -1,0 +1,57 @@
+ENV['RCT_NEW_ARCH_ENABLED'] = '1'
+
+# Resolve react_native_pods.rb with node to allow for hoisting
+require Pod::Executable.execute_command('node', ['-p',
+  'require.resolve(
+    "react-native/scripts/react_native_pods.rb",
+    {paths: [process.argv[1]]},
+  )', __dir__]).strip
+
+platform :ios, min_ios_version_supported
+prepare_react_native_project!
+
+linkage = ENV['USE_FRAMEWORKS']
+if linkage != nil
+  Pod::UI.puts "Configuring Pod with #{linkage}ally linked Frameworks".green
+  use_frameworks! :linkage => linkage.to_sym
+end
+
+target 'AscendReactNativeSdkExample' do
+  # Ascend iOS SDK dependency (required by AscendReactNativeSdk)
+  # Using git repository from dream-horizon-org - main branch
+  pod 'Ascend', :git => 'https://github.com/dream-horizon-org/ascend-ios.git', :branch => 'main'
+  
+  # Handle autolinking with fallback for when CLI can't detect project
+  begin
+  config = use_native_modules!
+  rescue => e
+    Pod::UI.puts "Note: use_native_modules! failed (#{e.message}), using manual configuration"
+    config = nil
+  end
+  
+  react_native_path = config && config[:reactNativePath] ? config[:reactNativePath] : '../../node_modules/react-native'
+
+  use_react_native!(
+    :path => react_native_path,
+    # An absolute path to your application root.
+    :app_path => "#{Pod::Config.instance.installation_root}/.."
+  )
+
+  post_install do |installer|
+    # https://github.com/facebook/react-native/blob/main/packages/react-native/scripts/react_native_pods.rb#L197-L202
+    react_native_post_install(
+      installer,
+      react_native_path,
+      :mac_catalyst_enabled => false,
+      # :ccache_enabled => true
+    )
+    
+    # Ensure Swift version consistency across all pods
+    installer.pods_project.targets.each do |target|
+      target.build_configurations.each do |config|
+        # Set Swift version to 5.7 for all pods (matching ascend-ios Package.swift requirement)
+        config.build_settings['SWIFT_VERSION'] = '5.7'
+      end
+    end
+  end
+end

@@ -1,0 +1,53 @@
+name: Publish GitHub Package
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+steps:
+  - name: Checkout
+    uses: actions/checkout@v4
+
+  - name: Enable Corepack
+    run: corepack enable
+
+  - name: Setup
+    uses: ./.github/actions/setup
+
+  - name: Setup Node.js
+    uses: actions/setup-node@v4
+    with:
+      node-version: 18
+      registry-url: https://npm.pkg.github.com/
+
+  - name: Configure npm for GitHub Packages
+    run: |
+      echo "@dream11:registry=https://npm.pkg.github.com" >> ~/.npmrc
+      echo "//npm.pkg.github.com/:_authToken=${GITHUB_TOKEN}" >> ~/.npmrc
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  - name: Install deps
+    run: yarn install
+
+  - name: Build
+    run: yarn prepare
+
+  - name: Set version from tag
+    run: |
+      TAG="v1"
+      VERSION="v1.0.0"
+      npm version --no-git-tag-version "$VERSION"
+
+  - name: Publish
+    run: npm publish --registry=https://npm.pkg.github.com
+    env:
+      NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
