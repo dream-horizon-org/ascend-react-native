@@ -66,7 +66,7 @@ export default function App() {
         },
       ],
       clientConfig: {
-        //go to ascend-panel and go to setttings and create a new project and copy the api key
+        //go to ascend-panel and go to settings and create a new project and copy the api key
         apiKey: 'x-api-key',
       },
     };
