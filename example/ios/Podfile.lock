@@ -1,6 +1,6 @@
 PODS:
   - Ascend (1.0.0)
-  - AscendReactNativeSdk (0.1.0):
+  - AscendReactNativeSdk (1.0.0):
     - Ascend
     - boost
     - DoubleConversion
@@ -2524,7 +2524,7 @@ CHECKOUT OPTIONS:
 
 SPEC CHECKSUMS:
   Ascend: bef288f9a5fd2806188fbd5ed97cead1689582d2
-  AscendReactNativeSdk: acc8e2b1c52b1f5f0b720b68590a3bbf5e2f1ffe
+  AscendReactNativeSdk: db3642d80b5aaa3f225e363dd10b2aea11343109
   boost: 7e761d76ca2ce687f7cc98e698152abd03a18f90
   DoubleConversion: cb417026b2400c8f53ae97020b2be961b59470cb
   fast_float: b32c788ed9c6a8c584d114d0047beda9664e7cc6

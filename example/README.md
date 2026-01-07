@@ -84,22 +84,44 @@ yarn android
 
 ## 🔧 Configuration
 
+### Getting Your API Key and Experiment Key
+
+Before configuring the SDK, you need to obtain your API key and experiment key from the Ascend Panel:
+
+#### 1. Get Your API Key
+
+1. Go to the **Ascend Panel**
+2. Navigate to the **Settings** page
+3. Create a new **Project** (or select an existing one)
+4. Copy the **API Key** that is generated for your project
+5. This API key will be used in the `clientConfig.apiKey` field
+
+#### 2. Get Your Experiment Key
+
+1. Go to the **Ascend Panel**
+2. Navigate to the **Experiments** section
+3. Create a new **Experiment** (or select an existing one)
+4. Copy the **Experiment Key** from the experiment details
+5. This experiment key will be used in the `headers['x-experiment-keys']` field
+
+### SDK Configuration
+
 The example app is configured to connect to a local API server. Update the configuration in `src/App.tsx`:
 
 ```typescript
 const config: AscendConfig = {
   httpConfig: {
-    apiBaseUrl: 'http://127.0.0.1:8100', // Change to your API URL
+    apiBaseUrl: 'http://127.0.0.1:8000', // Change to your API URL
   },
   plugins: [
     {
       name: 'EXPERIMENTS',
       config: {
         httpConfig: {
-          apiBaseUrl: 'http://127.0.0.1:8100',
+          apiBaseUrl: 'http://127.0.0.1:8000',
           apiEndpoint: '/v1/allocations/',
           headers: {
-            'x-experiment-keys': 'common_test', // Your experiment keys
+            'x-experiment-keys': 'common_test', // Your experiment key from Ascend Panel
           },
         },
         defaultValues: {
@@ -117,7 +139,7 @@ const config: AscendConfig = {
     },
   ],
   clientConfig: {
-    apiKey: 'your-api-key-here', // Your API key
+    apiKey: 'your-api-key-here', // Your API key from Ascend Panel Settings
     userId: '', // Optional: Set a user ID
   },
 };
