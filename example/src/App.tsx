@@ -21,14 +21,14 @@ export default function App() {
 
   // For physical iOS devices, replace 'localhost' with your Mac's IP address
   // Find your IP: System Settings > Network, or run `ipconfig getifaddr en0` in terminal
-  const API_PORT = '8100';
+  const API_PORT = '8000';
   const Experiment_Key = 'common_test';
   const getApiBaseUrl = () => {
     if (Platform.OS === 'android') {
       return `http://10.0.2.2:${API_PORT}`;
     }
     // iOS Simulator: use localhost
-    // iOS Physical Device: use your Mac's IP (e.g., 'http://192.168.1.100:8100')
+    // iOS Physical Device: use your Mac's IP (e.g., 'http://192.168.1.100:8000')
     return `http://127.0.0.1:${API_PORT}`;
   };
 
@@ -66,7 +66,8 @@ export default function App() {
         },
       ],
       clientConfig: {
-        apiKey: 'my-project',
+        //go to ascend-panel and go to setttings and create a new project and copy the api key
+        apiKey: 'x-api-key',
       },
     };
 
