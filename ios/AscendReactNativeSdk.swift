@@ -38,7 +38,7 @@ import Ascend
             
             var httpConfig: HTTPConfig
             if let httpConfigDict = configDict["httpConfig"] as? [String: Any] {
-                let apiBaseUrl = (httpConfigDict["apiBaseUrl"] as? String) ?? "https://localhost:8100"
+                let apiBaseUrl = (httpConfigDict["apiBaseUrl"] as? String) ?? "https://localhost:8000"
                 let shouldRetry = (httpConfigDict["shouldRetry"] as? NSNumber)?.boolValue ?? true
                 
                 var defaultHeaders = extractHeaders(from: httpConfigDict["headers"])

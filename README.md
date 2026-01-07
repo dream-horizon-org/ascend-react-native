@@ -52,17 +52,17 @@ import { Ascend } from '@dreamhorizonorg/ascend-react-native';
 const result = await Ascend.init({
   // Client authentication and user settings
   clientConfig: {
-    apiKey: 'your-api-key',              // Required: Your Ascend API key
-    userId: 'user-123',                  // Optional: Set user during initialization
-    environment: 'production',           // Optional: 'development' | 'staging' | 'production'
-    enableDebugLogging: false,           // Optional: Enable debug logs for troubleshooting
+    apiKey: 'your-api-key', // Required: Your Ascend API key
+    userId: 'user-123', // Optional: Set user during initialization
+    environment: 'production', // Optional: 'development' | 'staging' | 'production'
+    enableDebugLogging: false, // Optional: Enable debug logs for troubleshooting
   },
-  
+
   // Base HTTP configuration
   httpConfig: {
-    apiBaseUrl: 'https://your-api-url.com',  // Required: Your API base URL
+    apiBaseUrl: 'https://your-api-url.com', // Required: Your API base URL
   },
-  
+
   // Enable experiments plugin for feature flags and A/B testing
   plugins: [
     {
@@ -72,15 +72,15 @@ const result = await Ascend.init({
         httpConfig: {
           apiBaseUrl: 'https://your-api-url.com',
           apiEndpoint: '/v1/allocations/',
-          headers: { 
-            'x-experiment-keys': 'your-experiment-key',  // Your experiment keys
+          headers: {
+            'x-experiment-keys': 'your-experiment-key', // Your experiment keys
           },
         },
-        
+
         // Default values used as fallback when API is unavailable
         defaultValues: {
-          'button-color': { 
-            color: 'blue', 
+          'button-color': {
+            color: 'blue',
             enabled: true,
             size: 'medium',
           },
@@ -88,11 +88,11 @@ const result = await Ascend.init({
             enabled: false,
           },
         },
-        
+
         // Caching and behavior settings
-        enableCaching: true,                    // Enable offline caching
-        shouldFetchOnInit: true,                // Fetch experiments on initialization
-        shouldRefreshDRSOnForeground: false,    // Auto-refresh when app comes to foreground
+        enableCaching: true, // Enable offline caching
+        shouldFetchOnInit: true, // Fetch experiments on initialization
+        shouldRefreshDRSOnForeground: false, // Auto-refresh when app comes to foreground
       },
     },
   ],
@@ -130,13 +130,13 @@ const buttonConfig = await Experiments.getAllVariables('button-color');
 // Use in your components
 function MyButton() {
   const [config, setConfig] = useState({ color: 'blue', enabled: true });
-  
+
   useEffect(() => {
     Experiments.getAllVariables('button-color').then(setConfig);
   }, []);
-  
+
   if (!config.enabled) return null;
-  
+
   return <Button color={config.color} size={config.size} />;
 }
 ```
@@ -183,21 +183,21 @@ await Experiments.fetchExperiments({
 
 ### Experiments
 
-| Method | Description | Example |
-|--------|-------------|---------|
-| `getStringFlag(key, variable)` | Get string value | `await Experiments.getStringFlag('exp-1', 'color')` |
-| `getBooleanFlag(key, variable)` | Get boolean value | `await Experiments.getBooleanFlag('exp-1', 'enabled')` |
-| `getNumberFlag(key, variable)` | Get number value | `await Experiments.getNumberFlag('exp-1', 'count')` |
-| `getAllVariables<T>(key)` | Get all variables | `await Experiments.getAllVariables('exp-1')` |
-| `refreshExperiment()` | Refresh from server | `await Experiments.refreshExperiment()` |
+| Method                          | Description         | Example                                                |
+| ------------------------------- | ------------------- | ------------------------------------------------------ |
+| `getStringFlag(key, variable)`  | Get string value    | `await Experiments.getStringFlag('exp-1', 'color')`    |
+| `getBooleanFlag(key, variable)` | Get boolean value   | `await Experiments.getBooleanFlag('exp-1', 'enabled')` |
+| `getNumberFlag(key, variable)`  | Get number value    | `await Experiments.getNumberFlag('exp-1', 'count')`    |
+| `getAllVariables<T>(key)`       | Get all variables   | `await Experiments.getAllVariables('exp-1')`           |
+| `refreshExperiment()`           | Refresh from server | `await Experiments.refreshExperiment()`                |
 
 ### Ascend
 
-| Method | Description |
-|--------|-------------|
-| `init(config)` | Initialize SDK |
-| `setUser(userId)` | Set current user |
-| `getUserId()` | Get current user |
+| Method            | Description                 |
+| ----------------- | --------------------------- |
+| `init(config)`    | Initialize SDK              |
+| `setUser(userId)` | Set current user            |
+| `getUserId()`     | Get current user            |
 | `isInitialized()` | Check initialization status |
 
 ## Configuration
